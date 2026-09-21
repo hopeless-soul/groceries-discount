@@ -10,6 +10,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "kaufland-discounts": "file:../../../../scripts/kaufland/ts",
+    "lidl-discounts": "file:../../../../scripts/lidl/ts",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
