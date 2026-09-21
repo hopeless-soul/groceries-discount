@@ -4,18 +4,20 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LocationSelectCard } from "@/components/location/LocationSelectCard";
 import { useLocationStore } from "@/lib/stores/location-store";
+import { useHasHydrated } from "@/hooks/useHasHydrated";
 
 export default function Page() {
   const router = useRouter();
+  const hasHydrated = useHasHydrated();
   const { country, city, setLocation } = useLocationStore();
 
   useEffect(() => {
-    if (country && city) {
+    if (hasHydrated && country && city) {
       router.replace("/dashboard");
     }
-  }, [country, city, router]);
+  }, [hasHydrated, country, city, router]);
 
-  if (country && city) {
+  if (!hasHydrated || (country && city)) {
     return null;
   }
 
