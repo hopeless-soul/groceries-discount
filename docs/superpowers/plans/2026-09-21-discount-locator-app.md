@@ -1408,7 +1408,7 @@ git commit -m "feat: add fetchDashboardData server action"
 
 **Files:**
 - Create: `components.json` (via shadcn CLI)
-- Create: `lib/cn.ts` (via shadcn CLI, or `lib/utils.ts` depending on CLI default — confirm actual generated path in Step 2 and use it consistently in later tasks)
+- Create: `lib/utils.ts` (via shadcn CLI — provides the `cn()` classname helper shadcn's own generated primitives use internally; no other task in this plan imports it directly)
 - Create: `components/ui/button.tsx`
 - Create: `components/ui/select.tsx`
 - Create: `components/ui/card.tsx`
@@ -1423,15 +1423,11 @@ Run: `npx shadcn@latest init`
 
 When prompted, choose: base color **Zinc** (matches the design spec's zinc neutrals), CSS variables **yes**, and accept the detected Tailwind v4 / App Router setup.
 
-- [ ] **Step 2: Verify the generated utility path**
-
-Run: `ls lib` (or `Get-ChildItem lib` on Windows) and confirm whether the CLI created `lib/utils.ts` (most common) or `lib/cn.ts`. Every later task's `cn(...)` import in this plan assumes `@/lib/utils` — if the CLI generated a different path, note it here and use that path consistently in Tasks 11–19 instead.
-
-- [ ] **Step 3: Add the four primitives**
+- [ ] **Step 2: Add the four primitives**
 
 Run: `npx shadcn@latest add button select card badge`
 
-- [ ] **Step 4: Verify the app still builds**
+- [ ] **Step 3: Verify the app still builds**
 
 Run: `npx tsc --noEmit`
 Expected: no errors.
@@ -1439,7 +1435,7 @@ Expected: no errors.
 Run: `npx vitest run`
 Expected: PASS (all existing tests — shadcn setup doesn't touch tested code).
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add components.json components/ui lib/utils.ts package.json package-lock.json
