@@ -1446,25 +1446,30 @@ git commit -m "chore: set up shadcn/ui with button/select/card/badge primitives"
 
 ---
 
-### Task 10: App shell tokens (Inter font, design-spec colors)
+### Task 10: App shell tokens (Inter font, background canvas color)
+
+**IMPORTANT — this task's scope changed from its original conception.** Task 9 (shadcn init) already generated a complete, real shadcn Zinc CSS-variable theme in `app/globals.css` (oklch-based `--background`, `--foreground`, `--card`, `--primary`, `--border`, `--destructive`, `--muted-foreground`, etc., wired through a `@theme inline` block that `components/ui/*.tsx` already depend on for their Tailwind classes). **Do NOT wholesale-replace `app/globals.css`** — that would delete variable names (`--card`, `--popover`, `--muted`, `--accent`, `--input`, `--ring`, `--sidebar-*`) the Button/Select/Card/Badge components from Task 9 actually use, breaking their styling. `specs/design spec.md`'s Open Questions section itself says real shadcn tokens should replace hand-approximated hex values once available — that's now the case, so this task defers to Task 9's real Zinc values for `--foreground`/`--border`/`--primary`/`--destructive`/etc. rather than forcing the design spec's originally hand-picked hex numbers.
+
+The one real gap: the design spec distinguishes a page "ground" color (`#fafafa`) from the card surface color (`#ffffff`), but shadcn's default Zinc theme sets `--background` to pure white (`oklch(1 0 0)`), same as `--card`. This task's only necessary change is overriding `--background` to `#fafafa` in the existing `:root` block, plus switching the font to Inter.
 
 **Files:**
 - Modify: `app/layout.tsx`
-- Modify: `app/globals.css`
+- Modify: `app/globals.css` (one value changed, nothing removed)
 
 **Interfaces:**
-- Produces: `--font-sans` bound to Inter; `--background: #fafafa`; text/border color tokens matching `specs/design spec.md`'s "Design tokens" section — consumed visually by every component task.
+- Produces: `--font-sans` bound to Inter (via next/font's `variable` matching the name `app/globals.css`'s `@theme inline` block already references); `--background` overridden to `#fafafa` — consumed visually by every component task, alongside the untouched shadcn Zinc variables from Task 9.
 
 - [ ] **Step 1: Switch the font to Inter**
 
-Replace the Geist imports in `app/layout.tsx`:
+First, read the current `app/globals.css`'s `@theme inline` block (from Task 9) to see the exact font variable name it already references — as of Task 9 it's `--font-sans: var(--font-sans);` (a placeholder shadcn leaves for you to wire up). Update `app/layout.tsx` to import Inter and name its CSS variable to match that exact placeholder name (likely `--font-sans` itself, so the `@theme inline` line becomes non-circular once next/font actually defines it — if Task 9's file has a different placeholder name, use that name instead):
+
 ```tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
-  variable: "--font-inter",
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
@@ -1482,41 +1487,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 }
 ```
 
-- [ ] **Step 2: Replace design tokens in `app/globals.css`**
+If Task 9's `--font-mono` line in `@theme inline` still points at `var(--font-geist-mono)` (a variable this app no longer defines once Geist is removed), leave a monospace fallback in place rather than a dangling reference — either keep `Geist_Mono` imported solely for that variable, or point `--font-mono` at a system monospace stack (e.g. `ui-monospace, monospace`) directly in `globals.css`. Prefer whichever keeps the diff smaller; this app doesn't use monospace text anywhere in the design, so it's a minor loose end either way — don't spend more than a couple minutes on it.
 
+- [ ] **Step 2: Override the background canvas color in `app/globals.css`**
+
+In the existing `:root` block (do not touch any other variable, do not touch the `.dark` block, do not remove `--card`/`--popover`/`--muted`/`--accent`/`--input`/`--ring`/`--sidebar-*`/`--chart-*`), change only:
 ```css
-@import "tailwindcss";
-
-:root {
   --background: #fafafa;
-  --foreground: #09090b;
-  --surface: #ffffff;
-  --border-color: #e4e4e7;
-  --text-secondary: #71717a;
-  --text-tertiary: #a1a1aa;
-  --primary: #18181b;
-  --primary-foreground: #fafafa;
-  --success-bg: #dcfce7;
-  --success-text: #15803d;
-  --destructive: #dc2626;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-border: var(--border-color);
-  --font-sans: var(--font-inter);
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
-}
 ```
+(replacing the line currently reading `--background: oklch(1 0 0);`). Every other line in `:root` and `.dark` stays exactly as Task 9 generated it.
 
-This drops the previous dark-mode `@media (prefers-color-scheme: dark)` block entirely — the design spec is a single fixed light palette with no dark-mode variant designed.
+Leave the rest of the file — the `@import` lines, `@custom-variant dark`, the full `@theme inline` block (aside from the font-variable fix in Step 1), `.dark`, and `@layer base` — untouched.
 
 - [ ] **Step 3: Verify the app builds and renders**
 
