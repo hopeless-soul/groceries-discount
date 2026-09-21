@@ -59,6 +59,62 @@ describe("LidlProvider", () => {
     expect(data.offers[0].discountPercent).toBe(23);
   });
 
+  it("derives a deterministic id for offers with no id from the API, stable across refetches", async () => {
+    const rawOfferNoId = {
+      title: "Yogurt",
+      brand: "Andros",
+      category: "Dairy & Eggs",
+      startValidityDate: "2026-09-15T00:00:00.000Z",
+      endValidityDate: "2026-09-22T00:00:00.000Z",
+      packaging: "500 g",
+      priceBox: {
+        largePartNumeric: 0.79,
+        smallPartNumeric: 0.99,
+      },
+    };
+    const offersResponseNoId = { totalOffers: 1, offers: [rawOfferNoId] };
+
+    mockFetchSequence(
+      { ok: true, json: async () => storeSearchResponse },
+      { ok: true, json: async () => offersResponseNoId },
+    );
+    const data1 = await new LidlProvider().fetch("SK", "Bratislava");
+
+    mockFetchSequence(
+      { ok: true, json: async () => storeSearchResponse },
+      { ok: true, json: async () => offersResponseNoId },
+    );
+    const data2 = await new LidlProvider().fetch("SK", "Bratislava");
+
+    expect(data1.offers[0].id).toBeTruthy();
+    expect(data1.offers[0].id).toBe(data2.offers[0].id);
+  });
+
+  it("derives different ids for offers with no id that differ in stable fields", async () => {
+    const rawOfferA = {
+      title: "Yogurt",
+      category: "Dairy & Eggs",
+      startValidityDate: "2026-09-15T00:00:00.000Z",
+      endValidityDate: "2026-09-22T00:00:00.000Z",
+      priceBox: { largePartNumeric: 0.79, smallPartNumeric: 0.99 },
+    };
+    const rawOfferB = {
+      title: "Kefir",
+      category: "Dairy & Eggs",
+      startValidityDate: "2026-09-15T00:00:00.000Z",
+      endValidityDate: "2026-09-22T00:00:00.000Z",
+      priceBox: { largePartNumeric: 1.19, smallPartNumeric: 1.49 },
+    };
+
+    mockFetchSequence(
+      { ok: true, json: async () => storeSearchResponse },
+      { ok: true, json: async () => ({ totalOffers: 2, offers: [rawOfferA, rawOfferB] }) },
+    );
+    const data = await new LidlProvider().fetch("SK", "Bratislava");
+
+    expect(data.offers[0].id).not.toBe(data.offers[1].id);
+  });
+
   it("returns empty DashboardData when no store matches the city", async () => {
     mockFetchSequence(
       { ok: true, json: async () => [] },

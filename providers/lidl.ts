@@ -4,6 +4,42 @@ import type { Category, DashboardData, Offer } from "@/lib/types";
 import { computeDaysLeft, computeRingPercent } from "@/lib/validity";
 import { type GroceryProvider, StoreName } from "./types";
 
+/**
+ * Deterministic djb2-based string hash. Used to derive a stable synthetic id
+ * for offers that don't already carry one from the API — the same raw offer
+ * fields must always hash to the same id across separate fetches, or a cart
+ * entry keyed on that id becomes unreachable after a refetch.
+ */
+function hashString(input: string): string {
+  let hash = 5381;
+  for (let i = 0; i < input.length; i++) {
+    hash = ((hash << 5) + hash + input.charCodeAt(i)) >>> 0;
+  }
+  return hash.toString(36);
+}
+
+/**
+ * Builds a synthetic offer id from fields that are stable across refetches
+ * of the same real-world offer (title, packaging/unit price, category, and
+ * the raw validity window as reported by the API — not the defaulted
+ * `validUntil`, which falls back to `new Date()` and would change on every
+ * fetch). Deliberately avoids `crypto.randomUUID()`, which regenerates on
+ * every normalize() call and breaks cart identity for offers without an id.
+ */
+function syntheticOfferId(offer: OfferData): string {
+  const parts = [
+    offer.title ?? "",
+    offer.category ?? "",
+    offer.packaging ?? "",
+    offer.pricePerUnit ?? "",
+    String(offer.priceBox?.smallPartNumeric ?? ""),
+    String(offer.priceBox?.largePartNumeric ?? ""),
+    offer.startValidityDate ?? "",
+    offer.endValidityDate ?? "",
+  ].join("|");
+  return `lidl-synthetic-${hashString(parts)}`;
+}
+
 export class LidlProvider implements GroceryProvider {
   name = StoreName.Lidl;
   label = "Lidl";
@@ -43,7 +79,7 @@ export class LidlProvider implements GroceryProvider {
       const validFrom = offer.startValidityDate ?? validUntil;
 
       normalizedOffers.push({
-        id: offer.id ?? crypto.randomUUID(),
+        id: offer.id ?? syntheticOfferId(offer),
         title: offer.title ?? "",
         subtitle: offer.packaging ?? offer.pricePerUnit ?? "",
         categoryId,
