@@ -2936,12 +2936,14 @@ git commit -m "feat: add CartItemRow and CartPanel components"
 
 ### Task 19: `app/dashboard/page.tsx` — wire the 3-pane layout
 
+**IMPORTANT — hydration-gate requirement added after Task 12's review.** Task 12 (`app/page.tsx`) hit a real SSR/hydration-mismatch risk: gating a page's render on Zustand's localStorage-persisted `useLocationStore` state can mismatch between the server's render (no `localStorage`) and the client's first hydration pass (store may already be rehydrated). The fix there was a shared `hooks/useHasHydrated.ts` hook that makes the first client render always match the server's `null` output, only reading real store state after mount. This task has the identical shape of risk (same `useLocationStore`-gated redirect) — **import and use that same hook**, don't skip it and don't reimplement a second copy of it.
+
 **Files:**
 - Create: `app/dashboard/page.tsx`
 - Test: `app/dashboard/page.test.tsx`
 
 **Interfaces:**
-- Consumes: `AppHeader` (13), `StoreList` (14), `CategoryList` (14), `OfferGrid` (17), `CartPanel` (18), `useLocationStore` (4), `useDashboardUiStore` (4), `useDashboardData` (16).
+- Consumes: `AppHeader` (13), `StoreList` (14), `CategoryList` (14), `OfferGrid` (17), `CartPanel` (18), `useLocationStore` (4), `useDashboardUiStore` (4), `useDashboardData` (16), `useHasHydrated` (from `hooks/useHasHydrated.ts`, added during Task 12's fix round).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -3039,11 +3041,13 @@ import { CategoryList } from "@/components/dashboard/CategoryList";
 import { OfferGrid } from "@/components/dashboard/OfferGrid";
 import { CartPanel } from "@/components/dashboard/CartPanel";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { useHasHydrated } from "@/hooks/useHasHydrated";
 import { useLocationStore } from "@/lib/stores/location-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const hasHydrated = useHasHydrated();
   const country = useLocationStore((s) => s.country);
   const city = useLocationStore((s) => s.city);
   const selectedStore = useDashboardUiStore((s) => s.selectedStore);
@@ -3051,12 +3055,12 @@ export default function DashboardPage() {
   const { data } = useDashboardData(selectedStore);
 
   useEffect(() => {
-    if (!country || !city) {
+    if (hasHydrated && (!country || !city)) {
       router.replace("/");
     }
-  }, [country, city, router]);
+  }, [hasHydrated, country, city, router]);
 
-  if (!country || !city) {
+  if (!hasHydrated || !country || !city) {
     return null;
   }
 
@@ -3119,7 +3123,7 @@ Open `http://localhost:3000`. Confirm: brand card is centered, Continue is disab
 
 - [ ] **Step 3: Reload at `/`**
 
-Navigate back to `http://localhost:3000/`. Confirm it immediately redirects to `/dashboard` (location already in localStorage) with no flash of the location card.
+Navigate back to `http://localhost:3000/`. Confirm it immediately redirects to `/dashboard` (location already in localStorage) with no flash of the location card. Open the browser devtools console and confirm there's no React hydration-mismatch warning — this is the real-browser check that Tasks 12/19's `useHasHydrated` gate (added after a mid-plan review finding) was meant to prevent; vitest/jsdom can't reproduce true server-vs-client hydration timing, so this manual check is the only place that risk actually gets verified.
 
 - [ ] **Step 4: Verify real Lidl data**
 
