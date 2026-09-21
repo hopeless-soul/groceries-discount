@@ -2,13 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { OfferCard } from "@/components/dashboard/OfferCard";
-import { useDashboardData } from "@/hooks/useDashboardData";
+import type { UseDashboardDataResult } from "@/hooks/useDashboardData";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 
-export function OfferGrid() {
-  const selectedStore = useDashboardUiStore((s) => s.selectedStore);
+type OfferGridProps = UseDashboardDataResult;
+
+export function OfferGrid({ data, loading, error, refetch }: OfferGridProps) {
   const activeCategory = useDashboardUiStore((s) => s.activeCategory);
-  const { data, loading, error, refetch } = useDashboardData(selectedStore);
 
   if (loading) {
     return <p className="p-6 text-sm text-[#71717a]">Loading offers…</p>;

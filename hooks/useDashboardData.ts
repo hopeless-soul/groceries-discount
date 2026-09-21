@@ -6,7 +6,7 @@ import { useLocationStore } from "@/lib/stores/location-store";
 import type { DashboardData } from "@/lib/types";
 import type { StoreName } from "@/providers/types";
 
-interface UseDashboardDataResult {
+export interface UseDashboardDataResult {
   data: DashboardData | null;
   loading: boolean;
   error: Error | null;

@@ -67,4 +67,10 @@ describe("Dashboard page", () => {
     render(<DashboardPage />);
     expect(screen.queryByText(/cart ·/i)).not.toBeInTheDocument();
   });
+
+  it("calls useDashboardData exactly once per render, so OfferGrid and CategoryList share a single fetch", () => {
+    useDashboardData.mockClear();
+    render(<DashboardPage />);
+    expect(useDashboardData).toHaveBeenCalledTimes(1);
+  });
 });

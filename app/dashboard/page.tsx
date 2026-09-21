@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const city = useLocationStore((s) => s.city);
   const selectedStore = useDashboardUiStore((s) => s.selectedStore);
   const cartOpen = useDashboardUiStore((s) => s.cartOpen);
-  const { data } = useDashboardData(selectedStore);
+  const { data, loading, error, refetch } = useDashboardData(selectedStore);
 
   useEffect(() => {
     if (hasHydrated && (!country || !city)) {
@@ -43,7 +43,7 @@ export default function DashboardPage() {
           <CategoryList categories={categories} totalCount={totalCount} />
         </div>
         <div className="flex-1 overflow-y-auto">
-          <OfferGrid />
+          <OfferGrid data={data} loading={loading} error={error} refetch={refetch} />
         </div>
         {cartOpen && <CartPanel />}
       </div>
