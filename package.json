@@ -10,11 +10,17 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@base-ui/react": "^1.8.0",
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.3.2",
     "kaufland-discounts": "file:../../../../scripts/kaufland/ts",
     "lidl-discounts": "file:../../../../scripts/lidl/ts",
+    "lucide-react": "^1.47.0",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "shadcn": "^4.21.0",
+    "tw-animate-css": "^1.4.0",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
