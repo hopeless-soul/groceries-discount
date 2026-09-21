@@ -62,4 +62,32 @@ describe("useDashboardData", () => {
     act(() => result.current.refetch());
     await waitFor(() => expect(fetchDashboardData).toHaveBeenCalledTimes(2));
   });
+
+  it("flips loading back to true synchronously (before any await) when refetch() is called", async () => {
+    fetchDashboardData.mockResolvedValue(sampleData);
+    const { result } = renderHook(() => useDashboardData(StoreName.Lidl));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => result.current.refetch());
+    // No await/waitFor before this assertion: the effect's setLoading(true) must run
+    // synchronously within the same act() flush, not after a microtask/.then() tick.
+    expect(result.current.loading).toBe(true);
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+  });
+
+  it("flips loading back to true synchronously (before any await) when storeName changes", async () => {
+    fetchDashboardData.mockResolvedValue(sampleData);
+    const { result, rerender } = renderHook(
+      ({ store }) => useDashboardData(store),
+      { initialProps: { store: StoreName.Lidl } },
+    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    rerender({ store: StoreName.Kaufland });
+    // Same guarantee as above, exercised via the storeName-change path instead of refetch().
+    expect(result.current.loading).toBe(true);
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+  });
 });

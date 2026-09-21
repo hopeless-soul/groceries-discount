@@ -25,26 +25,23 @@ export function useDashboardData(storeName: StoreName): UseDashboardDataResult {
     if (!country || !city) return;
     let cancelled = false;
 
-    Promise.resolve()
-      .then(() => {
+    (async () => {
+      if (!cancelled) {
+        setLoading(true);
+        setError(null);
+      }
+      try {
+        const result = await fetchDashboardData(storeName, country, city);
+        if (!cancelled) setData(result);
+      } catch (err: unknown) {
         if (!cancelled) {
-          setLoading(true);
-          setError(null);
+          setData(null);
+          setError(err instanceof Error ? err : new Error(String(err)));
         }
-        return fetchDashboardData(storeName, country, city);
-      })
-      .then((result) => {
-        if (cancelled) return;
-        setData(result);
-      })
-      .catch((err: unknown) => {
-        if (cancelled) return;
-        setData(null);
-        setError(err instanceof Error ? err : new Error(String(err)));
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    })();
 
     return () => {
       cancelled = true;
