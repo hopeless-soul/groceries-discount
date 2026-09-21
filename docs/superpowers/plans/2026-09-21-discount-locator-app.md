@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - Working directory for all app code: `C:\Users\hk\Documents\Development\react\groceries-discount\groceries-discount`.
-- Vendor packages live at `../scripts/lidl/ts` and `../scripts/kaufland/ts` (relative to the app's `package.json`) and must be consumed via `file:` dependency, not copied.
+- Vendor packages live at `scripts/lidl/ts` and `scripts/kaufland/ts`, siblings of the outer `groceries-discount/` project directory, and must be consumed via `file:` dependency, not copied. The relative path from the app's `package.json` depends on how deeply nested the app's checkout is (e.g. a plain checkout vs. a git worktree under `.claude/worktrees/<name>/`) — compute it fresh with `realpath` rather than assuming Task 5's example path is correct for your checkout; it was written for the app at its original (non-worktree) location.
 - `DashboardData.store.dotColor` is always static config, never from an API response.
 - Only `location` (`country` ISO code + `city`) and `cart` state persist to `localStorage`; `selectedStore`/`activeCategory`/`cartOpen` are session-only.
 - `StoreName` enum values: `Lidl = 'lidl'`, `Kaufland = 'kaufland'`, `Billa = 'billa'`, `Tesco = 'tesco'`. `GroceryProvider.name` uses this enum; `GroceryProvider.fetch` is the only public method, `normalize` is private.
@@ -787,26 +787,28 @@ git commit -m "feat: add Zustand location/cart/dashboard-ui stores"
 ### Task 5: Wire vendor packages (`lidl-discounts`, `kaufland-discounts`)
 
 **Files:**
-- Modify: `../scripts/lidl/ts` (build only, no source changes)
+- Modify: the vendor package at `scripts/lidl/ts` (build only, no source changes — resolve its actual path per the note below)
 - Modify: `package.json` (add `lidl-discounts`, `kaufland-discounts` as `file:` dependencies)
 - Test: `lib/vendor-packages.test.ts`
 
 **Interfaces:**
 - Produces: working `import { LidlPlus } from "lidl-discounts"` and `import { lookupDiscounts } from "kaufland-discounts"` from within the app — consumed by Tasks 6–7.
 
+**IMPORTANT — resolve the real path first:** `scripts/lidl/ts` and `scripts/kaufland/ts` are siblings of the outer `groceries-discount/` project directory, not of this app's `package.json`. The `file:` dependency path below must be relative to *your actual working directory* (`pwd`), which may be a git worktree nested several levels deeper than a plain checkout. Before Step 1, run: `realpath ../../../../scripts/lidl/ts` (adjust the number of `../` until it resolves to the real `scripts/lidl/ts` directory containing `package.json`/`src/`) and use that same relative path consistently in every step below in place of the literal `../scripts/lidl/ts` / `../scripts/kaufland/ts` shown here — those literals are illustrative, written for the app at its non-worktree location.
+
 - [ ] **Step 1: Build the Lidl package**
 
-Run (from `scripts/lidl/ts`): `npm install && npm run build`
+Run (from the resolved `scripts/lidl/ts` path): `npm install && npm run build`
 Expected: `scripts/lidl/ts/dist/index.js` and `dist/index.d.ts` are created.
 
 - [ ] **Step 2: Confirm the Kaufland package is already built**
 
-Run: `ls ../scripts/kaufland/ts/dist` (from the app directory)
+Run: `ls <resolved-path-to>/scripts/kaufland/ts/dist` (from the app directory, using the relative path you resolved above)
 Expected: `index.js`, `index.d.ts` already present (committed in the provided script). If missing, run `npm install && npm run build` inside `scripts/kaufland/ts` first.
 
 - [ ] **Step 3: Add file: dependencies and install**
 
-Add to `package.json` `"dependencies"`:
+Add to `package.json` `"dependencies"`, using your resolved relative path (NOT necessarily the literal `../scripts/...` shown here — see the note above):
 ```json
 "lidl-discounts": "file:../scripts/lidl/ts",
 "kaufland-discounts": "file:../scripts/kaufland/ts"
@@ -854,7 +856,7 @@ git add package.json package-lock.json lib/vendor-packages.test.ts
 git commit -m "build: wire lidl-discounts and kaufland-discounts as local file: dependencies"
 ```
 
-Note: `scripts/lidl/ts/dist` and `scripts/kaufland/ts/dist` are build output of packages outside this repo's app root — if `scripts/` is a separate git repo or gitignored there, no action needed here; if it's tracked and dist/ is gitignored inside `scripts/lidl/ts`, that's fine, `npm install` regenerates `node_modules/lidl-discounts` from source-controlled `dist/` only if committed. Confirm with `git -C ../scripts status` — if `scripts/lidl/ts/dist` shows as untracked and `.gitignore` there ignores `dist/`, leave it untracked (matches Kaufland's own `.gitignore` convention).
+Note: `scripts/lidl/ts/dist` and `scripts/kaufland/ts/dist` are build output of packages outside this repo's app root — if `scripts/` is a separate git repo or gitignored there, no action needed here; if it's tracked and dist/ is gitignored inside `scripts/lidl/ts`, that's fine, `npm install` regenerates `node_modules/lidl-discounts` from source-controlled `dist/` only if committed. Confirm with `git -C <resolved-path-to>/scripts status` — if `scripts/lidl/ts/dist` shows as untracked and `.gitignore` there ignores `dist/`, leave it untracked (matches Kaufland's own `.gitignore` convention).
 
 ---
 
