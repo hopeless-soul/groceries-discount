@@ -1,10 +1,11 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CartPanel } from "./CartPanel";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import { StoreName } from "@/providers/types";
+import { setDesktop } from "@/lib/test-utils/matchMedia";
 
 const item = {
   id: "o1",
@@ -28,6 +29,8 @@ beforeEach(() => {
   useCartStore.setState({ items: [] });
   useDashboardUiStore.setState({ selectedStore: StoreName.Lidl, activeCategory: "All", cartOpen: true });
 });
+
+afterEach(() => setDesktop(true));
 
 describe("CartPanel", () => {
   it("shows an empty state and a disabled Clear cart button when empty", () => {
@@ -60,5 +63,20 @@ describe("CartPanel", () => {
     render(<CartPanel />);
     await user.click(screen.getByRole("button", { name: /close/i }));
     expect(useDashboardUiStore.getState().cartOpen).toBe(false);
+  });
+});
+
+describe("CartPanel on mobile", () => {
+  it("renders cart content inside a drawer when cartOpen is true", () => {
+    setDesktop(false);
+    render(<CartPanel />);
+    expect(screen.getByText("Cart · 0")).toBeInTheDocument();
+  });
+
+  it("renders no cart content when cartOpen is false", () => {
+    setDesktop(false);
+    useDashboardUiStore.setState({ cartOpen: false });
+    render(<CartPanel />);
+    expect(screen.queryByText(/cart ·/i)).not.toBeInTheDocument();
   });
 });

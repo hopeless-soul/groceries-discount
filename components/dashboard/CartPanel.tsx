@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { CartItemRow } from "@/components/dashboard/CartItemRow";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { useIsDesktop } from "@/hooks/useIsDesktop";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 
@@ -9,10 +11,12 @@ export function CartPanel() {
   const items = useCartStore((s) => s.items);
   const remove = useCartStore((s) => s.remove);
   const clear = useCartStore((s) => s.clear);
+  const cartOpen = useDashboardUiStore((s) => s.cartOpen);
   const toggleCartOpen = useDashboardUiStore((s) => s.toggleCartOpen);
+  const isDesktop = useIsDesktop();
 
-  return (
-    <aside className="flex w-[320px] flex-col border-l border-[#e4e4e7] bg-white">
+  const content = (
+    <>
       <div className="flex h-[60px] items-center justify-between border-b border-[#e4e4e7] px-4">
         <span className="text-sm font-semibold">Cart · {items.length}</span>
         <button type="button" aria-label="Close" onClick={toggleCartOpen} className="text-[#a1a1aa]">
@@ -38,6 +42,25 @@ export function CartPanel() {
           Clear cart
         </Button>
       </div>
-    </aside>
+    </>
+  );
+
+  if (isDesktop) {
+    if (!cartOpen) return null;
+    return <aside className="flex w-[320px] flex-col border-l border-[#e4e4e7] bg-white">{content}</aside>;
+  }
+
+  return (
+    <Drawer
+      open={cartOpen}
+      swipeDirection="right"
+      onOpenChange={(open) => {
+        if (open !== cartOpen) toggleCartOpen();
+      }}
+    >
+      <DrawerContent side="right" className="w-[320px] max-w-[85vw]">
+        {content}
+      </DrawerContent>
+    </Drawer>
   );
 }
