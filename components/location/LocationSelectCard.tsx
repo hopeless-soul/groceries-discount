@@ -3,17 +3,23 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { COUNTRIES, getCitiesForCountry } from "@/lib/locations";
+import { CityAutocomplete } from "@/components/location/CityAutocomplete";
+import { COUNTRIES } from "@/lib/locations";
 
 interface LocationSelectCardProps {
   onSubmit: (country: string, city: string) => void;
+  initialCountry?: string | null;
+  initialCity?: string | null;
 }
 
-export function LocationSelectCard({ onSubmit }: LocationSelectCardProps) {
-  const [country, setCountry] = useState<string | null>(null);
-  const [city, setCity] = useState<string | null>(null);
+export function LocationSelectCard({
+  onSubmit,
+  initialCountry = null,
+  initialCity = null,
+}: LocationSelectCardProps) {
+  const [country, setCountry] = useState<string | null>(initialCountry);
+  const [city, setCity] = useState<string | null>(initialCity);
 
-  const cities = country ? getCitiesForCountry(country) : [];
   const canContinue = Boolean(country && city);
 
   return (
@@ -49,18 +55,7 @@ export function LocationSelectCard({ onSubmit }: LocationSelectCardProps) {
         </SelectContent>
       </Select>
 
-      <Select value={city ?? undefined} onValueChange={setCity} disabled={!country}>
-        <SelectTrigger aria-label="City">
-          <SelectValue placeholder="City" />
-        </SelectTrigger>
-        <SelectContent>
-          {cities.map((name) => (
-            <SelectItem key={name} value={name}>
-              {name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <CityAutocomplete countryCode={country} value={city} onChange={setCity} />
 
       <Button
         className="w-full"
