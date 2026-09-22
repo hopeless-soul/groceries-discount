@@ -29,17 +29,24 @@ export function OfferCard({ offer, storeId, storeLabel, storeDotColor }: OfferCa
         <ValidityRing ringPercent={offer.ringPercent} daysLeft={offer.daysLeft} />
       </div>
 
-      {showImages && offer.imageUrl && (
-        // next/image requires whitelisting each provider's image host in
-        // next.config.ts; Lidl's isn't confirmed yet, so a plain <img> is
-        // used to render both stores' images without that dependency.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={offer.imageUrl}
-          alt={offer.title}
-          loading="lazy"
-          className="h-16 w-16 rounded-[6px] object-cover"
-        />
+      {offer.imageUrl && (
+        <div
+          className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+          style={{ gridTemplateRows: showImages ? "1fr" : "0fr" }}
+        >
+          <div className="overflow-hidden">
+            {/* next/image requires whitelisting each provider's image host in
+                next.config.ts; Lidl's isn't confirmed yet, so a plain <img> is
+                used to render both stores' images without that dependency. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={offer.imageUrl}
+              alt={offer.title}
+              loading="lazy"
+              className="h-16 w-16 rounded-[6px] object-cover"
+            />
+          </div>
+        </div>
       )}
 
       <div>
