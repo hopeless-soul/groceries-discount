@@ -61,6 +61,7 @@ export default function DashboardPage() {
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex justify-between h-[60px] flex-shrink-0 items-center border-b border-[#e4e4e7] bg-white px-6">
             <div className="relative max-w-sm w-full">
+              {/* TODO: Shudcn searchbar */}
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#71717a]" />
               <Input
                 placeholder="Search products…"
@@ -79,22 +80,24 @@ export default function DashboardPage() {
                 </button>
               )}
             </div>
-            <label className="ml-4 flex items-center gap-2 text-sm text-[#71717a]">
-              <Switch checked={showImages} onCheckedChange={toggleShowImages} />
-              Show images
-            </label>
-            <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-              <SelectTrigger aria-label="Sort by" className="ml-4 w-[190px]">
-                <SelectValue placeholder="Sort">{(value) => SORT_LABELS[value as SortOption]}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.keys(SORT_LABELS) as SortOption[]).map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {SORT_LABELS[option]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center">
+              <label className="ml-4 flex items-center gap-2 text-sm text-[#71717a]">
+                <Switch checked={showImages} onCheckedChange={toggleShowImages} />
+                Show images
+              </label>
+              <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                <SelectTrigger aria-label="Sort by" className="ml-4 w-[190px]">
+                  <SelectValue placeholder="Sort">{(value) => SORT_LABELS[value as SortOption]}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(SORT_LABELS) as SortOption[]).map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {SORT_LABELS[option]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <OfferGrid data={data} loading={loading} error={error} refetch={refetch} />
         </div>
