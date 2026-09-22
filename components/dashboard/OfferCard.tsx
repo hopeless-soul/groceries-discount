@@ -59,7 +59,15 @@ export function OfferCard({ offer, storeId, storeLabel, storeDotColor }: OfferCa
           {offer.regularPrice.toFixed(2)}
         </span>
         <span className="text-lg font-bold">{offer.discountedPrice.toFixed(2)}</span>
-        <span className="rounded-full bg-[#dcfce7] px-2 py-0.5 text-[11px] font-semibold text-[#15803d]">
+        <span
+          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+            offer.discountPercent === 0
+              ? "bg-[#f4f4f5] text-[#71717a]"
+              : offer.discountPercent > 50
+                ? "bg-[#ffedd5] text-[#c2410c]"
+                : "bg-[#dcfce7] text-[#15803d]"
+          }`}
+        >
           -{offer.discountPercent}%
         </span>
       </div>
