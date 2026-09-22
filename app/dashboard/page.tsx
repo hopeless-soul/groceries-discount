@@ -47,9 +47,8 @@ export default function DashboardPage() {
       <div className="flex flex-1 overflow-hidden">
         <DashboardSidebar categories={categories} totalCount={totalCount} />
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex justify-between h-[60px] flex-shrink-0 items-center border-b border-[#e4e4e7] bg-white px-6">
+          <div className="flex gap-2 justify-between h-[60px] flex-shrink-0 items-center border-b border-[#e4e4e7] bg-white px-6">
             <div className="relative max-w-sm w-full">
-              {/* TODO: Shudcn searchbar */}
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#71717a]" />
               <Input
                 placeholder="Search products…"
