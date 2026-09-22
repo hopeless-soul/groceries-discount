@@ -29,7 +29,7 @@ export const useDashboardUiStore = create<DashboardUiState>()(
       cartOpen: true,
       receiptOpen: false,
       searchQuery: "",
-      showImages: false,
+      showImages: true,
       sortBy: "default",
       setSelectedStore: (store) => set({ selectedStore: store, activeCategory: "All" }),
       setActiveCategory: (category) => set({ activeCategory: category }),

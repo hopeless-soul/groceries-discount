@@ -1,10 +1,47 @@
 "use client";
 
+import { useMemo } from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { DialogClose, DialogPortal } from "@/components/ui/dialog";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import { groupCartItemsByStore, type ReceiptStoreGroup } from "@/lib/receipt";
+
+function mulberry32(seed: number): () => number {
+  let a = seed;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (Math.imul(31, hash) + str.charCodeAt(i)) | 0;
+  }
+  return hash;
+}
+
+function buildBarcodeGradient(seed: string): string {
+  const rand = mulberry32(hashString(seed));
+  const stops: string[] = [];
+  let pos = 0;
+  while (pos < 100) {
+    const barWidth = 0.6 + rand() * 2.2;
+    const gapWidth = 0.6 + rand() * 2;
+    const barEnd = Math.min(pos + barWidth, 100);
+    stops.push(`#18181b ${pos}%`, `#18181b ${barEnd}%`, `transparent ${barEnd}%`);
+    pos = barEnd;
+    const gapEnd = Math.min(pos + gapWidth, 100);
+    stops.push(`transparent ${gapEnd}%`);
+    pos = gapEnd;
+  }
+  return `linear-gradient(90deg, ${stops.join(", ")})`;
+}
 
 const ZIGZAG_TEETH = 14;
 
@@ -93,6 +130,9 @@ export function ReceiptOverlay() {
   const receiptOpen = useDashboardUiStore((s) => s.receiptOpen);
   const toggleReceiptOpen = useDashboardUiStore((s) => s.toggleReceiptOpen);
 
+  const barcodeSeed = items.map((item) => item.id).join("|");
+  const barcodeGradient = useMemo(() => buildBarcodeGradient(barcodeSeed), [barcodeSeed]);
+
   if (items.length === 0) return null;
 
   const { groups, grandTotal, grandSavings } = groupCartItemsByStore(items);
@@ -141,10 +181,7 @@ export function ReceiptOverlay() {
             <div
               aria-hidden
               className="mx-auto mt-3 h-10 w-full max-w-[220px]"
-              style={{
-                backgroundImage:
-                  "repeating-linear-gradient(90deg, #18181b 0, #18181b 2px, transparent 2px, transparent 5px)",
-              }}
+              style={{ backgroundImage: barcodeGradient }}
             />
             <p className="text-center text-xs text-[#71717a]">
               {groups.reduce((sum, g) => sum + g.items.length, 0)} ITEMS

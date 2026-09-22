@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { CartItemRow } from "@/components/dashboard/CartItemRow";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
@@ -14,6 +15,15 @@ export function CartPanel() {
   const cartOpen = useDashboardUiStore((s) => s.cartOpen);
   const toggleCartOpen = useDashboardUiStore((s) => s.toggleCartOpen);
   const isDesktop = useIsDesktop();
+
+  const didInit = useRef(false);
+  useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
+    if (!isDesktop && useDashboardUiStore.getState().cartOpen) {
+      toggleCartOpen();
+    }
+  }, [isDesktop, toggleCartOpen]);
 
   const content = (
     <>
