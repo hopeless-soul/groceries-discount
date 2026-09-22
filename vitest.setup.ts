@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom/vitest";
+import { setDesktop } from "@/lib/test-utils/matchMedia";
 
 if (typeof window !== "undefined" && !window.ResizeObserver) {
   class ResizeObserverStub {
@@ -22,3 +23,5 @@ if (typeof HTMLElement !== "undefined") {
     value: 800,
   });
 }
+
+setDesktop(true);
