@@ -33,7 +33,7 @@ function ZigzagEdge({ edge }: { edge: "top" | "bottom" }) {
   return (
     <div
       aria-hidden
-      className="h-4 w-full bg-[#fdfdf8]"
+      className={`h-4 w-full bg-[#fdfdf8] ${edge === "top" ? "translate-y-1" : "-translate-y-1"}`}
       style={{ clipPath: buildZigzagClipPath(edge) }}
     />
   );
@@ -41,14 +41,25 @@ function ZigzagEdge({ edge }: { edge: "top" | "bottom" }) {
 
 function StoreGroupBlock({ group }: { group: ReceiptStoreGroup }) {
   return (
-    <div className="py-3">
+    <div className="pt-3 pb-6">
       <p className="text-sm font-bold">{group.storeLabel.toUpperCase()}</p>
-      {group.items.map((item) => (
-        <div key={item.id} className="flex justify-between gap-3 py-1 text-sm">
-          <span className="truncate">{item.title}</span>
-          <span className="flex-shrink-0">{item.discountedPrice.toFixed(2)}</span>
-        </div>
-      ))}
+      {group.items.map((item) => {
+        const discountPct =
+          item.regularPrice > 0
+            ? Math.round((1 - item.discountedPrice / item.regularPrice) * 100)
+            : 0;
+        return (
+          <div key={item.id} className="flex justify-between gap-3 py-1 text-sm">
+            <span className="">
+              {item.title}
+              {discountPct > 0 && (
+                <span className="ml-2 text-xs text-[#71717a]">-{discountPct}%</span>
+              )}
+            </span>
+            <span className="flex-shrink-0">{item.discountedPrice.toFixed(2)}</span>
+          </div>
+        );
+      })}
       <div className="mt-2 border-t border-dashed border-[#18181b]/40 pt-2">
         <div className="flex justify-between text-sm font-semibold">
           <span>SUBTOTAL</span>
@@ -82,10 +93,10 @@ export function ReceiptOverlay() {
       }}
     >
       <DialogPortal>
-        <DialogPrimitive.Popup className="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full max-w-[360px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-sm font-mono text-[#18181b] shadow-lg data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+        <DialogPrimitive.Popup className="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full max-w-[360px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-sm overflow-auto scrollbar-nonefont-mono text-[#18181b] shadow-lg data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
           <DialogClose
             aria-label="Close"
-            className="absolute right-2 top-2 z-10 text-xl leading-none text-[#71717a]"
+            className="absolute right-2 top-5 z-10 text-xl leading-none text-[#71717a]"
           >
             ×
           </DialogClose>
