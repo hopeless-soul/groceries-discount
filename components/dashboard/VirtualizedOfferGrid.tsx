@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { OfferCard } from "@/components/dashboard/OfferCard";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { Offer } from "@/lib/types";
 
 interface StoreProps {
@@ -17,7 +18,7 @@ interface VirtualizedOfferGridProps<T extends Offer> {
   getStoreProps: (offer: T) => StoreProps;
 }
 
-const COLUMNS = 3;
+const PHONE_QUERY = "(max-width: 767px)";
 const ESTIMATED_ROW_HEIGHT = 280;
 
 export function VirtualizedOfferGrid<T extends Offer>({
@@ -26,6 +27,8 @@ export function VirtualizedOfferGrid<T extends Offer>({
   getStoreProps,
 }: VirtualizedOfferGridProps<T>) {
   const parentRef = useRef<HTMLDivElement>(null);
+  const isPhone = useMediaQuery(PHONE_QUERY);
+  const COLUMNS = isPhone ? 2 : 3;
 
   const rows: T[][] = [];
   for (let i = 0; i < offers.length; i += COLUMNS) {
@@ -62,7 +65,7 @@ export function VirtualizedOfferGrid<T extends Offer>({
                 width: "100%",
                 transform: `translateY(${virtualRow.start}px)`,
               }}
-              className="grid grid-cols-3 gap-5 pb-5"
+              className={isPhone ? "grid grid-cols-2 gap-5 pb-5" : "grid grid-cols-3 gap-5 pb-5"}
             >
               {row.map((offer) => {
                 const storeProps = getStoreProps(offer);
