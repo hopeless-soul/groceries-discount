@@ -23,3 +23,4 @@ export const COUNTRIES: Country[] = [
 export function getCitiesForCountry(code: string): string[] {
   return COUNTRIES.find((country) => country.code === code)?.cities ?? [];
 }
+
