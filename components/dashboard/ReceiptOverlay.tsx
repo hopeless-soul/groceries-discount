@@ -6,19 +6,35 @@ import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import { groupCartItemsByStore, type ReceiptStoreGroup } from "@/lib/receipt";
 
-const ZIGZAG_EDGE =
-  "linear-gradient(135deg, transparent 8px, #fdfdf8 8px) 0 0, linear-gradient(-135deg, transparent 8px, #fdfdf8 8px) 0 0";
+const ZIGZAG_TEETH = 14;
 
-function ZigzagEdge() {
+function buildZigzagClipPath(edge: "top" | "bottom"): string {
+  const step = 100 / ZIGZAG_TEETH;
+  const points: string[] = [];
+
+  if (edge === "top") {
+    points.push("0% 100%");
+    for (let i = 0; i <= ZIGZAG_TEETH; i++) {
+      points.push(`${i * step}% ${i % 2 === 0 ? 0 : 55}%`);
+    }
+    points.push("100% 100%");
+  } else {
+    points.push("0% 0%");
+    for (let i = 0; i <= ZIGZAG_TEETH; i++) {
+      points.push(`${i * step}% ${i % 2 === 0 ? 100 : 45}%`);
+    }
+    points.push("100% 0%");
+  }
+
+  return `polygon(${points.join(", ")})`;
+}
+
+function ZigzagEdge({ edge }: { edge: "top" | "bottom" }) {
   return (
     <div
       aria-hidden
-      className="h-3 w-full bg-[#fdfdf8]"
-      style={{
-        backgroundImage: ZIGZAG_EDGE,
-        backgroundSize: "16px 16px",
-        backgroundRepeat: "repeat-x",
-      }}
+      className="h-4 w-full bg-[#fdfdf8]"
+      style={{ clipPath: buildZigzagClipPath(edge) }}
     />
   );
 }
@@ -73,7 +89,7 @@ export function ReceiptOverlay() {
           >
             ×
           </DialogClose>
-          <ZigzagEdge />
+          <ZigzagEdge edge="top" />
           <div className="bg-[#fdfdf8] px-5 py-4">
             <p className="text-center text-base font-bold tracking-widest">GROCERIES DISCOUNT</p>
             <p className="text-center text-xs text-[#71717a]">{new Date().toLocaleString()}</p>
@@ -111,7 +127,7 @@ export function ReceiptOverlay() {
               {groups.reduce((sum, g) => sum + g.items.length, 0)} ITEMS
             </p>
           </div>
-          <ZigzagEdge />
+          <ZigzagEdge edge="bottom" />
         </DialogPrimitive.Popup>
       </DialogPortal>
     </DialogPrimitive.Root>
