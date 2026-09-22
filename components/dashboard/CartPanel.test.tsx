@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CartPanel } from "./CartPanel";
 import { useCartStore } from "@/lib/stores/cart-store";
@@ -67,10 +67,11 @@ describe("CartPanel", () => {
 });
 
 describe("CartPanel on mobile", () => {
-  it("renders cart content inside a drawer when cartOpen is true", () => {
+  it("auto-closes the drawer on mount even when cartOpen starts true", () => {
     setDesktop(false);
     render(<CartPanel />);
-    expect(screen.getByText("Cart · 0")).toBeInTheDocument();
+    expect(screen.queryByText(/cart ·/i)).not.toBeInTheDocument();
+    expect(useDashboardUiStore.getState().cartOpen).toBe(false);
   });
 
   it("renders no cart content when cartOpen is false", () => {
@@ -78,5 +79,18 @@ describe("CartPanel on mobile", () => {
     useDashboardUiStore.setState({ cartOpen: false });
     render(<CartPanel />);
     expect(screen.queryByText(/cart ·/i)).not.toBeInTheDocument();
+  });
+
+  it("opens the drawer when cartOpen is toggled on after mount", async () => {
+    const user = userEvent.setup();
+    setDesktop(false);
+    useDashboardUiStore.setState({ cartOpen: false });
+    render(<CartPanel />);
+    expect(screen.queryByText(/cart ·/i)).not.toBeInTheDocument();
+
+    await act(async () => {
+      useDashboardUiStore.getState().toggleCartOpen();
+    });
+    expect(await screen.findByText("Cart · 0")).toBeInTheDocument();
   });
 });

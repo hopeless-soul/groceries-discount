@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CartItemRow } from "@/components/dashboard/CartItemRow";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
@@ -16,14 +16,20 @@ export function CartPanel() {
   const toggleCartOpen = useDashboardUiStore((s) => s.toggleCartOpen);
   const isDesktop = useIsDesktop();
 
-  const didInit = useRef(false);
-  useEffect(() => {
-    if (didInit.current) return;
-    didInit.current = true;
+  // Snapshot once, on the very first render, whether the drawer would open on mobile.
+  // Suppressing the drawer's `open` prop with this (rather than correcting cartOpen
+  // after mount) prevents it from ever painting open before this effect can close it.
+  const [suppressInitialMobileOpen, setSuppressInitialMobileOpen] = useState(
+    () => !isDesktop && cartOpen,
+  );
+
+  useLayoutEffect(() => {
     if (!isDesktop && useDashboardUiStore.getState().cartOpen) {
       toggleCartOpen();
     }
-  }, [isDesktop, toggleCartOpen]);
+    setSuppressInitialMobileOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const content = (
     <>
@@ -60,12 +66,14 @@ export function CartPanel() {
     return <aside className="flex w-[320px] flex-col border-l border-[#e4e4e7] bg-white">{content}</aside>;
   }
 
+  const drawerOpen = suppressInitialMobileOpen ? false : cartOpen;
+
   return (
     <Drawer
-      open={cartOpen}
+      open={drawerOpen}
       swipeDirection="right"
       onOpenChange={(open) => {
-        if (open !== cartOpen) toggleCartOpen();
+        if (open !== drawerOpen) toggleCartOpen();
       }}
     >
       <DrawerContent side="right" className="w-[320px] max-w-[85vw]">
