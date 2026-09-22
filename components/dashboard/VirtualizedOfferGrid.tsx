@@ -47,7 +47,7 @@ export function VirtualizedOfferGrid<T extends Offer>({
   });
 
   return (
-    <div ref={parentRef} className="min-h-0 flex-1 overflow-y-auto p-6 pr-3 pt-3">
+    <div ref={parentRef} className="min-h-0 flex-1 overflow-y-auto p-3 sm:pl-3 md:pl-6 sm:pb-3 md:pb-6">
       <div
         style={{ height: virtualizer.getTotalSize(), position: "relative", width: "100%" }}
       >
@@ -65,7 +65,7 @@ export function VirtualizedOfferGrid<T extends Offer>({
                 width: "100%",
                 transform: `translateY(${virtualRow.start}px)`,
               }}
-              className={isPhone ? "grid grid-cols-2 gap-5 pb-5" : "grid grid-cols-3 gap-5 pb-5"}
+              className={isPhone ? "grid grid-cols-2 gap-3 pb-3" : "grid grid-cols-3 gap-5 pb-5"}
             >
               {row.map((offer) => {
                 const storeProps = getStoreProps(offer);

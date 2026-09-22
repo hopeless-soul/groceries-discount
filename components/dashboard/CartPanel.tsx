@@ -51,7 +51,7 @@ export function CartPanel() {
       <div className="border-t border-[#e4e4e7] p-4">
         <Button
           variant="outline"
-          className="w-full text-[#dc2626]"
+          className="h-12 w-full text-[#dc2626] sm:h-8"
           disabled={items.length === 0}
           onClick={clear}
         >

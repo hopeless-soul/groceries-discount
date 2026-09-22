@@ -5,6 +5,7 @@ import { StoreList } from "@/components/dashboard/StoreList";
 import { CategoryList } from "@/components/dashboard/CategoryList";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsDesktop } from "@/hooks/useIsDesktop";
+import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import type { Category } from "@/lib/types";
 
 interface DashboardSidebarProps {
@@ -14,6 +15,8 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ categories, totalCount }: DashboardSidebarProps) {
   const isDesktop = useIsDesktop();
+  const sidebarOpen = useDashboardUiStore((s) => s.sidebarOpen);
+  const toggleSidebarOpen = useDashboardUiStore((s) => s.toggleSidebarOpen);
 
   if (isDesktop) {
     return (
@@ -25,7 +28,13 @@ export function DashboardSidebar({ categories, totalCount }: DashboardSidebarPro
   }
 
   return (
-    <Drawer swipeDirection="left">
+    <Drawer
+      swipeDirection="left"
+      open={sidebarOpen}
+      onOpenChange={(open) => {
+        if (open !== sidebarOpen) toggleSidebarOpen();
+      }}
+    >
       <DrawerTrigger
         aria-label="Open menu"
         className="fixed bottom-4 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-[#e4e4e7] bg-white shadow-lg"

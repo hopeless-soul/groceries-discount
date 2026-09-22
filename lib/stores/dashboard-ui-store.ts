@@ -8,6 +8,7 @@ interface DashboardUiState {
   selectedStore: StoreName;
   activeCategory: string;
   cartOpen: boolean;
+  sidebarOpen: boolean;
   receiptOpen: boolean;
   searchQuery: string;
   showImages: boolean;
@@ -15,6 +16,7 @@ interface DashboardUiState {
   setSelectedStore: (store: StoreName) => void;
   setActiveCategory: (category: string) => void;
   toggleCartOpen: () => void;
+  toggleSidebarOpen: () => void;
   toggleReceiptOpen: () => void;
   setSearchQuery: (query: string) => void;
   toggleShowImages: () => void;
@@ -27,6 +29,7 @@ export const useDashboardUiStore = create<DashboardUiState>()(
       selectedStore: StoreName.Lidl,
       activeCategory: "All",
       cartOpen: true,
+      sidebarOpen: false,
       receiptOpen: false,
       searchQuery: "",
       showImages: true,
@@ -34,6 +37,7 @@ export const useDashboardUiStore = create<DashboardUiState>()(
       setSelectedStore: (store) => set({ selectedStore: store, activeCategory: "All" }),
       setActiveCategory: (category) => set({ activeCategory: category }),
       toggleCartOpen: () => set((state) => ({ cartOpen: !state.cartOpen })),
+      toggleSidebarOpen: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
       toggleReceiptOpen: () => set((state) => ({ receiptOpen: !state.receiptOpen })),
       setSearchQuery: (query) => set({ searchQuery: query }),
       toggleShowImages: () => set((state) => ({ showImages: !state.showImages })),

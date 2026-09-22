@@ -60,13 +60,12 @@ export function OfferCard({ offer, storeId, storeLabel, storeDotColor }: OfferCa
         </span>
         <span className="text-lg font-bold">{offer.discountedPrice.toFixed(2)}</span>
         <span
-          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-            offer.discountPercent === 0
+          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${offer.discountPercent === 0
               ? "bg-[#f4f4f5] text-[#71717a]"
               : offer.discountPercent > 50
                 ? "bg-[#ffedd5] text-[#c2410c]"
                 : "bg-[#dcfce7] text-[#15803d]"
-          }`}
+            }`}
         >
           -{offer.discountPercent}%
         </span>
@@ -76,17 +75,19 @@ export function OfferCard({ offer, storeId, storeLabel, storeDotColor }: OfferCa
         Valid until {new Date(offer.validUntil).toLocaleDateString()}
       </p>
 
-      <Button
-        variant={inCart ? "default" : "outline"}
-        className="w-full"
-        onClick={() =>
-          inCart
-            ? remove(offer.id)
-            : add({ ...offer, storeId, storeLabel, storeDotColor })
-        }
-      >
-        {inCart ? "In cart" : "Add to cart"}
-      </Button>
+      <div className="flex flex-col justify-end flex-1">
+        <Button
+          variant={inCart ? "default" : "outline"}
+          className="w-full"
+          onClick={() =>
+            inCart
+              ? remove(offer.id)
+              : add({ ...offer, storeId, storeLabel, storeDotColor })
+          }
+        >
+          {inCart ? "In cart" : "Add to cart"}
+        </Button>
+      </div>
     </div>
   );
 }
