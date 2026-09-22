@@ -25,7 +25,7 @@ export async function searchCities(query: string, countryCode: string): Promise<
     `https://api.geoapify.com/v1/geocode/autocomplete` +
     `?text=${encodeURIComponent(trimmed)}` +
     `&type=city` +
-    `&filter=countrycode:${encodeURIComponent(countryCode)}` +
+    `&filter=countrycode:${encodeURIComponent(countryCode.toLowerCase())}` +
     `&apiKey=${apiKey}`;
 
   let response: Response;

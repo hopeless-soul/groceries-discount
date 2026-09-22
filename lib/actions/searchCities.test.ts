@@ -56,7 +56,7 @@ describe("searchCities", () => {
     expect(result).toEqual(["Trencin", "Trencianske Teplice"]);
   });
 
-  it("calls Geoapify with the query, country filter, and api key", async () => {
+  it("calls Geoapify with the query, lowercased country filter, and api key", async () => {
     mockFetchOnce({ features: [] });
 
     await searchCities("Trenc", "SK");
@@ -66,7 +66,7 @@ describe("searchCities", () => {
     expect(calledUrl).toContain("https://api.geoapify.com/v1/geocode/autocomplete");
     expect(calledUrl).toContain("text=Trenc");
     expect(calledUrl).toContain("type=city");
-    expect(calledUrl).toContain("filter=countrycode:SK");
+    expect(calledUrl).toContain("filter=countrycode:sk");
     expect(calledUrl).toContain("apiKey=test-key");
   });
 
