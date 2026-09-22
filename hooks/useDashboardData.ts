@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { buildCacheKey, cachedFetch, invalidateFetchCache } from "@/lib/cache/fetchCache";
 import { fetchDashboardData } from "@/lib/fetchDashboardData";
 import { useLocationStore } from "@/lib/stores/location-store";
 import type { DashboardData } from "@/lib/types";
@@ -32,7 +33,8 @@ export function useDashboardData(storeName: StoreName): UseDashboardDataResult {
         setError(null);
       }
       try {
-        const result = await fetchDashboardData(storeName, country, city);
+        const key = buildCacheKey("dashboard", storeName, country, city);
+        const result = await cachedFetch(key, () => fetchDashboardData(storeName, country, city));
         if (!cancelled) setData(result);
       } catch (err: unknown) {
         if (!cancelled) {
@@ -49,7 +51,12 @@ export function useDashboardData(storeName: StoreName): UseDashboardDataResult {
     };
   }, [storeName, country, city, version]);
 
-  const refetch = useCallback(() => setVersion((v) => v + 1), []);
+  const refetch = useCallback(() => {
+    if (country && city) {
+      invalidateFetchCache(buildCacheKey("dashboard", storeName, country, city));
+    }
+    setVersion((v) => v + 1);
+  }, [storeName, country, city]);
 
   return { data, loading, error, refetch };
 }

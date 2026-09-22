@@ -13,7 +13,7 @@ export function CartPanel() {
 
   return (
     <aside className="flex w-[320px] flex-col border-l border-[#e4e4e7] bg-white">
-      <div className="flex items-center justify-between border-b border-[#e4e4e7] p-4">
+      <div className="flex h-[60px] items-center justify-between border-b border-[#e4e4e7] px-4">
         <span className="text-sm font-semibold">Cart · {items.length}</span>
         <button type="button" aria-label="Close" onClick={toggleCartOpen} className="text-[#a1a1aa]">
           ×

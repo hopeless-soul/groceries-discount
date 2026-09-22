@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import { useDashboardData } from "./useDashboardData";
+import { clearFetchCache } from "@/lib/cache/fetchCache";
 import { useLocationStore } from "@/lib/stores/location-store";
 import { StoreName } from "@/providers/types";
 
@@ -17,6 +18,7 @@ const sampleData = {
 
 beforeEach(() => {
   fetchDashboardData.mockReset();
+  clearFetchCache();
   useLocationStore.setState({ country: "SK", city: "Bratislava" });
 });
 
