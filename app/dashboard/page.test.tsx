@@ -12,6 +12,11 @@ vi.mock("@/hooks/useDashboardData", () => ({
   useDashboardData: (...args: unknown[]) => useDashboardData(...args),
 }));
 
+const useAllStoresOffers = vi.fn();
+vi.mock("@/hooks/useAllStoresOffers", () => ({
+  useAllStoresOffers: (...args: unknown[]) => useAllStoresOffers(...args),
+}));
+
 import { useLocationStore } from "@/lib/stores/location-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import { StoreName } from "@/providers/types";
@@ -21,7 +26,12 @@ beforeEach(() => {
   replace.mockClear();
   localStorage.clear();
   useLocationStore.setState({ country: "SK", city: "Bratislava" });
-  useDashboardUiStore.setState({ selectedStore: StoreName.Lidl, activeCategory: "All", cartOpen: true });
+  useDashboardUiStore.setState({
+    selectedStore: StoreName.Lidl,
+    activeCategory: "All",
+    cartOpen: true,
+    searchQuery: "",
+  });
   useDashboardData.mockReturnValue({
     data: {
       store: { id: "lidl", label: "Lidl", dotColor: "#2563eb" },
@@ -45,6 +55,8 @@ beforeEach(() => {
     error: null,
     refetch: vi.fn(),
   });
+  useAllStoresOffers.mockReset();
+  useAllStoresOffers.mockReturnValue({ offers: [], loading: false, error: null });
 });
 
 describe("Dashboard page", () => {
@@ -72,5 +84,29 @@ describe("Dashboard page", () => {
     useDashboardData.mockClear();
     render(<DashboardPage />);
     expect(useDashboardData).toHaveBeenCalledTimes(1);
+  });
+
+  it("typing into the search box updates the store and shows a clear button", async () => {
+    const user = userEvent.setup();
+    render(<DashboardPage />);
+    const input = screen.getByPlaceholderText(/search products/i);
+
+    expect(screen.queryByRole("button", { name: /clear search/i })).not.toBeInTheDocument();
+
+    await user.type(input, "bread");
+
+    expect(useDashboardUiStore.getState().searchQuery).toBe("bread");
+    expect(screen.getByRole("button", { name: /clear search/i })).toBeInTheDocument();
+  });
+
+  it("clicking the clear button resets the search query", async () => {
+    useDashboardUiStore.setState({ searchQuery: "bread" });
+    const user = userEvent.setup();
+    render(<DashboardPage />);
+
+    await user.click(screen.getByRole("button", { name: /clear search/i }));
+
+    expect(useDashboardUiStore.getState().searchQuery).toBe("");
+    expect(screen.queryByRole("button", { name: /clear search/i })).not.toBeInTheDocument();
   });
 });

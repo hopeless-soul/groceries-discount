@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { StoreList } from "@/components/dashboard/StoreList";
 import { CategoryList } from "@/components/dashboard/CategoryList";
@@ -21,6 +21,8 @@ export default function DashboardPage() {
   const city = useLocationStore((s) => s.city);
   const selectedStore = useDashboardUiStore((s) => s.selectedStore);
   const cartOpen = useDashboardUiStore((s) => s.cartOpen);
+  const searchQuery = useDashboardUiStore((s) => s.searchQuery);
+  const setSearchQuery = useDashboardUiStore((s) => s.setSearchQuery);
   const { data, loading, error, refetch } = useDashboardData(selectedStore);
 
   useEffect(() => {
@@ -48,7 +50,22 @@ export default function DashboardPage() {
           <div className="sticky top-0 z-10 flex h-[60px] items-center border-b border-[#e4e4e7] bg-white px-6">
             <div className="relative max-w-sm w-full">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#71717a]" />
-              <Input placeholder="Search products…" className="h-9 pl-8" />
+              <Input
+                placeholder="Search products…"
+                className="h-9 pl-8 pr-8"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#71717a] hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
           <OfferGrid data={data} loading={loading} error={error} refetch={refetch} />

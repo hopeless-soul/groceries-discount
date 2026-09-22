@@ -7,16 +7,23 @@ beforeEach(() => {
     selectedStore: StoreName.Lidl,
     activeCategory: "All",
     cartOpen: true,
+    searchQuery: "",
   });
 });
 
 describe("useDashboardUiStore", () => {
-  it("defaults to Lidl / All / cartOpen=true", () => {
+  it("defaults to Lidl / All / cartOpen=true / searchQuery=''", () => {
     expect(useDashboardUiStore.getState()).toMatchObject({
       selectedStore: StoreName.Lidl,
       activeCategory: "All",
       cartOpen: true,
+      searchQuery: "",
     });
+  });
+
+  it("setSearchQuery updates the query", () => {
+    useDashboardUiStore.getState().setSearchQuery("bread");
+    expect(useDashboardUiStore.getState().searchQuery).toBe("bread");
   });
 
   it("setSelectedStore resets activeCategory to All", () => {
