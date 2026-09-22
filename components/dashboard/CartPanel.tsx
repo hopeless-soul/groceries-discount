@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useState } from "react";
+import { Collapsible } from "@base-ui/react/collapsible";
 import { Button } from "@/components/ui/button";
 import { CartItemRow } from "@/components/dashboard/CartItemRow";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
@@ -62,8 +63,13 @@ export function CartPanel() {
   );
 
   if (isDesktop) {
-    if (!cartOpen) return null;
-    return <aside className="flex w-[320px] flex-col border-l border-[#e4e4e7] bg-white">{content}</aside>;
+    return (
+      <Collapsible.Root open={cartOpen}>
+        <Collapsible.Panel className="flex h-full flex-col overflow-hidden border-l border-[#e4e4e7] bg-white transition-[width] duration-200 ease-out w-(--collapsible-panel-width) data-starting-style:w-0 data-ending-style:w-0">
+          <div className="flex h-full w-[320px] flex-shrink-0 flex-col">{content}</div>
+        </Collapsible.Panel>
+      </Collapsible.Root>
+    );
   }
 
   const drawerOpen = suppressInitialMobileOpen ? false : cartOpen;

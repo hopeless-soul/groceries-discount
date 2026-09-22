@@ -17,7 +17,7 @@ function DrawerPortal({
     <DrawerPrimitive.Portal {...props}>
       <DrawerPrimitive.Backdrop
         data-slot="drawer-backdrop"
-        className="fixed inset-0 z-50 bg-black/50 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0"
+        className="fixed inset-0 z-50 bg-black/50 transition-opacity duration-100 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0"
       />
       <DrawerPrimitive.Viewport
         data-slot="drawer-viewport"
@@ -43,8 +43,10 @@ function DrawerContent({
       <DrawerPrimitive.Popup
         data-slot="drawer-content"
         className={cn(
-          "flex h-full w-[280px] flex-col overflow-y-auto bg-white shadow-lg outline-none [transform:translateX(var(--drawer-swipe-movement-x))] data-ending-style:duration-150 data-starting-style:duration-150",
-          side === "left" ? "border-r border-[#e4e4e7]" : "border-l border-[#e4e4e7]",
+          "flex h-full w-[280px] flex-col overflow-y-auto bg-white shadow-lg outline-none transition-transform duration-200 ease-out transform-[translateX(var(--drawer-swipe-movement-x))] data-swiping:duration-0",
+          side === "left"
+            ? "border-r border-[#e4e4e7] data-ending-style:transform-[translateX(-100%)] data-starting-style:transform-[translateX(-100%)]"
+            : "border-l border-[#e4e4e7] data-ending-style:transform-[translateX(100%)] data-starting-style:transform-[translateX(100%)]",
           className
         )}
         {...props}
