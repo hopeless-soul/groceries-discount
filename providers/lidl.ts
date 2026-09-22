@@ -89,6 +89,7 @@ export class LidlProvider implements GroceryProvider {
         validUntil,
         daysLeft: computeDaysLeft(validUntil),
         ringPercent: computeRingPercent(validFrom, validUntil),
+        imageUrl: offer.imageUrl ?? null,
       });
     }
 

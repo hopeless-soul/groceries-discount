@@ -9,6 +9,7 @@ import { CategoryList } from "@/components/dashboard/CategoryList";
 import { OfferGrid } from "@/components/dashboard/OfferGrid";
 import { CartPanel } from "@/components/dashboard/CartPanel";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useHasHydrated } from "@/hooks/useHasHydrated";
 import { useLocationStore } from "@/lib/stores/location-store";
@@ -23,6 +24,8 @@ export default function DashboardPage() {
   const cartOpen = useDashboardUiStore((s) => s.cartOpen);
   const searchQuery = useDashboardUiStore((s) => s.searchQuery);
   const setSearchQuery = useDashboardUiStore((s) => s.setSearchQuery);
+  const showImages = useDashboardUiStore((s) => s.showImages);
+  const toggleShowImages = useDashboardUiStore((s) => s.toggleShowImages);
   const { data, loading, error, refetch } = useDashboardData(selectedStore);
 
   useEffect(() => {
@@ -46,8 +49,8 @@ export default function DashboardPage() {
           <StoreList />
           <CategoryList categories={categories} totalCount={totalCount} />
         </div>
-        <div className="flex-1 overflow-y-auto">
-          <div className="sticky top-0 z-10 flex h-[60px] items-center border-b border-[#e4e4e7] bg-white px-6">
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex h-[60px] flex-shrink-0 items-center border-b border-[#e4e4e7] bg-white px-6">
             <div className="relative max-w-sm w-full">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#71717a]" />
               <Input
@@ -67,6 +70,10 @@ export default function DashboardPage() {
                 </button>
               )}
             </div>
+            <label className="ml-4 flex items-center gap-2 text-sm text-[#71717a]">
+              <Switch checked={showImages} onCheckedChange={toggleShowImages} />
+              Show images
+            </label>
           </div>
           <OfferGrid data={data} loading={loading} error={error} refetch={refetch} />
         </div>

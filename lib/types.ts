@@ -21,6 +21,7 @@ export interface Offer {
   validUntil: string;
   daysLeft: number;
   ringPercent: number;
+  imageUrl: string | null;
 }
 
 export interface DashboardData {

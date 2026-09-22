@@ -37,6 +37,7 @@ describe("fetchDashboardData", () => {
           validUntil: "2026-01-01",
           daysLeft: 1,
           ringPercent: 1,
+          imageUrl: null,
         },
         {
           id: "b",
@@ -49,6 +50,7 @@ describe("fetchDashboardData", () => {
           validUntil: "2026-01-01",
           daysLeft: 1,
           ringPercent: 1,
+          imageUrl: null,
         },
       ],
     });

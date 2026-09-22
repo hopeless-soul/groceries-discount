@@ -31,6 +31,7 @@ beforeEach(() => {
     activeCategory: "All",
     cartOpen: true,
     searchQuery: "",
+    showImages: false,
   });
   useDashboardData.mockReturnValue({
     data: {
@@ -48,6 +49,7 @@ beforeEach(() => {
           validUntil: "2026-09-22T00:00:00.000Z",
           daysLeft: 4,
           ringPercent: 50,
+          imageUrl: null,
         },
       ],
     },
@@ -108,5 +110,14 @@ describe("Dashboard page", () => {
 
     expect(useDashboardUiStore.getState().searchQuery).toBe("");
     expect(screen.queryByRole("button", { name: /clear search/i })).not.toBeInTheDocument();
+  });
+
+  it("clicking the show images switch toggles showImages in the store", async () => {
+    const user = userEvent.setup();
+    render(<DashboardPage />);
+
+    expect(useDashboardUiStore.getState().showImages).toBe(false);
+    await user.click(screen.getByRole("switch", { name: /show images/i }));
+    expect(useDashboardUiStore.getState().showImages).toBe(true);
   });
 });

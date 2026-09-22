@@ -14,6 +14,7 @@ const item = {
   validUntil: "2026-09-22T00:00:00.000Z",
   daysLeft: 1,
   ringPercent: 95,
+  imageUrl: null,
   storeId: "lidl",
   storeLabel: "Lidl",
   storeDotColor: "#2563eb",

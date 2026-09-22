@@ -56,6 +56,7 @@ export class KauflandProvider implements GroceryProvider {
         validUntil: o.valid_to,
         daysLeft: computeDaysLeft(o.valid_to),
         ringPercent: computeRingPercent(o.valid_from, o.valid_to),
+        imageUrl: o.image_url ?? null,
       };
     });
 

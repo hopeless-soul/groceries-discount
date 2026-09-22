@@ -13,6 +13,7 @@ const item = (id: string): CartItem => ({
   validUntil: "2026-09-22T00:00:00.000Z",
   daysLeft: 4,
   ringPercent: 50,
+  imageUrl: null,
   storeId: "lidl",
   storeLabel: "Lidl",
   storeDotColor: "#2563eb",

@@ -37,6 +37,17 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: computeTurbopackRoot(),
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "kaufland.media.schwarz",
+      },
+      // TODO: Lidl's imageUrl host isn't present in any fixture/README in
+      // this repo. Log a real offer.imageUrl from LidlProvider.fetch() with
+      // a live country/city and add its hostname here once confirmed.
+    ],
+  },
 };
 
 export default nextConfig;

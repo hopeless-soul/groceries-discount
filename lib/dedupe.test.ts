@@ -14,6 +14,7 @@ function offer(overrides: Partial<Offer>): Offer {
     validUntil: "2026-01-01",
     daysLeft: 5,
     ringPercent: 50,
+    imageUrl: null,
     ...overrides,
   };
 }

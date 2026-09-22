@@ -3,22 +3,36 @@ import { useDashboardUiStore } from "./dashboard-ui-store";
 import { StoreName } from "@/providers/types";
 
 beforeEach(() => {
+  localStorage.clear();
   useDashboardUiStore.setState({
     selectedStore: StoreName.Lidl,
     activeCategory: "All",
     cartOpen: true,
     searchQuery: "",
+    showImages: false,
   });
 });
 
 describe("useDashboardUiStore", () => {
-  it("defaults to Lidl / All / cartOpen=true / searchQuery=''", () => {
+  it("defaults to Lidl / All / cartOpen=true / searchQuery='' / showImages=false", () => {
     expect(useDashboardUiStore.getState()).toMatchObject({
       selectedStore: StoreName.Lidl,
       activeCategory: "All",
       cartOpen: true,
       searchQuery: "",
+      showImages: false,
     });
+  });
+
+  it("toggleShowImages flips the boolean and persists it across store instances", () => {
+    useDashboardUiStore.getState().toggleShowImages();
+    expect(useDashboardUiStore.getState().showImages).toBe(true);
+
+    const persisted = JSON.parse(localStorage.getItem("groceries-discount:dashboard-ui") ?? "{}");
+    expect(persisted.state).toMatchObject({ showImages: true });
+
+    useDashboardUiStore.getState().toggleShowImages();
+    expect(useDashboardUiStore.getState().showImages).toBe(false);
   });
 
   it("setSearchQuery updates the query", () => {

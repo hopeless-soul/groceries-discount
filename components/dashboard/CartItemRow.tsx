@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { getUrgencyColor } from "@/lib/validity";
 import type { CartItem } from "@/lib/types";
 
@@ -13,7 +14,18 @@ export function CartItemRow({ item, onRemove }: CartItemRowProps) {
 
   return (
     <div className="flex items-start gap-3 border-b border-[#e4e4e7] py-3">
-      <div className="h-11 w-11 flex-shrink-0 rounded-[6px] bg-[#f4f4f5]" />
+      {item.imageUrl ? (
+        <Image
+          src={item.imageUrl}
+          alt={item.title}
+          width={44}
+          height={44}
+          loading="lazy"
+          className="h-11 w-11 flex-shrink-0 rounded-[6px] object-cover"
+        />
+      ) : (
+        <div className="h-11 w-11 flex-shrink-0 rounded-[6px] bg-[#f4f4f5]" />
+      )}
       <div className="flex-1">
         <div className="flex items-center gap-2 text-xs text-[#71717a]">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.storeDotColor }} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { OfferCard } from "@/components/dashboard/OfferCard";
+import { VirtualizedOfferGrid } from "@/components/dashboard/VirtualizedOfferGrid";
 import type { UseDashboardDataResult } from "@/hooks/useDashboardData";
 import { useAllStoresOffers } from "@/hooks/useAllStoresOffers";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
@@ -37,21 +37,19 @@ export function OfferGrid({ data, loading, error, refetch }: OfferGridProps) {
     }
 
     return (
-      <div className="p-6">
-        <p className="mb-4 text-sm text-[#71717a]">
+      <div className="flex h-full flex-col p-6">
+        <p className="mb-4 flex-shrink-0 text-sm text-[#71717a]">
           {matches.length} offers match &quot;{searchQuery}&quot;
         </p>
-        <div className="grid grid-cols-3 gap-5">
-          {matches.map((offer) => (
-            <OfferCard
-              key={`${offer.storeId}-${offer.id}`}
-              offer={offer}
-              storeId={offer.storeId}
-              storeLabel={offer.storeLabel}
-              storeDotColor={offer.storeDotColor}
-            />
-          ))}
-        </div>
+        <VirtualizedOfferGrid
+          offers={matches}
+          getKey={(offer) => `${offer.storeId}-${offer.id}`}
+          getStoreProps={(offer) => ({
+            storeId: offer.storeId,
+            storeLabel: offer.storeLabel,
+            storeDotColor: offer.storeDotColor,
+          })}
+        />
       </div>
     );
   }
@@ -84,21 +82,19 @@ export function OfferGrid({ data, loading, error, refetch }: OfferGridProps) {
   }
 
   return (
-    <div className="p-6">
-      <p className="mb-4 text-sm text-[#71717a]">
+    <div className="flex h-full flex-col p-0">
+      {/* <p className="mb-4 flex-shrink-0 text-sm text-[#71717a]">
         {filtered.length} offers at {data?.store.label}
-      </p>
-      <div className="grid grid-cols-3 gap-5">
-        {filtered.map((offer) => (
-          <OfferCard
-            key={offer.id}
-            offer={offer}
-            storeId={data!.store.id}
-            storeLabel={data!.store.label}
-            storeDotColor={data!.store.dotColor}
-          />
-        ))}
-      </div>
+      </p> */}
+      <VirtualizedOfferGrid
+        offers={filtered}
+        getKey={(offer) => offer.id}
+        getStoreProps={() => ({
+          storeId: data!.store.id,
+          storeLabel: data!.store.label,
+          storeDotColor: data!.store.dotColor,
+        })}
+      />
     </div>
   );
 }

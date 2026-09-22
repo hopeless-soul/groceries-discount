@@ -24,6 +24,7 @@ const dataFor = (store: StoreName) => ({
       validUntil: "2026-09-22T00:00:00.000Z",
       daysLeft: 4,
       ringPercent: 50,
+      imageUrl: null,
     },
   ],
 });

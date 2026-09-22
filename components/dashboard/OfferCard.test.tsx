@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { OfferCard } from "./OfferCard";
 import { useCartStore } from "@/lib/stores/cart-store";
+import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 
 const offer = {
   id: "o1",
@@ -15,11 +16,13 @@ const offer = {
   validUntil: "2026-09-22T00:00:00.000Z",
   daysLeft: 4,
   ringPercent: 50,
+  imageUrl: null,
 };
 
 beforeEach(() => {
   localStorage.clear();
   useCartStore.setState({ items: [] });
+  useDashboardUiStore.setState({ showImages: false });
 });
 
 describe("OfferCard", () => {
@@ -47,5 +50,31 @@ describe("OfferCard", () => {
 
     expect(useCartStore.getState().items).toHaveLength(0);
     expect(screen.getByRole("button", { name: /add to cart/i })).toBeInTheDocument();
+  });
+
+  it("renders the offer image when showImages is on and imageUrl is present", () => {
+    useDashboardUiStore.setState({ showImages: true });
+    render(
+      <OfferCard
+        offer={{ ...offer, imageUrl: "https://kaufland.media.schwarz/is/image/schwarz/00138945_P" }}
+        storeId="lidl"
+        storeLabel="Lidl"
+        storeDotColor="#2563eb"
+      />,
+    );
+    expect(screen.getByRole("img", { name: "Milk" })).toBeInTheDocument();
+  });
+
+  it("hides the offer image when showImages is off, even if imageUrl is present", () => {
+    useDashboardUiStore.setState({ showImages: false });
+    render(
+      <OfferCard
+        offer={{ ...offer, imageUrl: "https://kaufland.media.schwarz/is/image/schwarz/00138945_P" }}
+        storeId="lidl"
+        storeLabel="Lidl"
+        storeDotColor="#2563eb"
+      />,
+    );
+    expect(screen.queryByRole("img", { name: "Milk" })).not.toBeInTheDocument();
   });
 });
