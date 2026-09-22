@@ -4,14 +4,26 @@ import { Button } from "@/components/ui/button";
 import { VirtualizedOfferGrid } from "@/components/dashboard/VirtualizedOfferGrid";
 import type { UseDashboardDataResult } from "@/hooks/useDashboardData";
 import { useAllStoresOffers } from "@/hooks/useAllStoresOffers";
-import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
+import { useDashboardUiStore, type SortOption } from "@/lib/stores/dashboard-ui-store";
 import { useLocationStore } from "@/lib/stores/location-store";
+import type { Offer } from "@/lib/types";
 
 type OfferGridProps = UseDashboardDataResult;
+
+function sortOffers<T extends Offer>(offers: T[], sortBy: SortOption): T[] {
+  if (sortBy === "default") return offers;
+  if (sortBy === "discountPercent") {
+    return [...offers].sort((a, b) => b.discountPercent - a.discountPercent);
+  }
+  return [...offers].sort(
+    (a, b) => b.regularPrice - b.discountedPrice - (a.regularPrice - a.discountedPrice),
+  );
+}
 
 export function OfferGrid({ data, loading, error, refetch }: OfferGridProps) {
   const activeCategory = useDashboardUiStore((s) => s.activeCategory);
   const searchQuery = useDashboardUiStore((s) => s.searchQuery);
+  const sortBy = useDashboardUiStore((s) => s.sortBy);
   const country = useLocationStore((s) => s.country);
   const city = useLocationStore((s) => s.city);
 
@@ -28,8 +40,11 @@ export function OfferGrid({ data, loading, error, refetch }: OfferGridProps) {
       return <p className="p-6 text-sm text-[#71717a]">Couldn&apos;t load offers. Please try again.</p>;
     }
 
-    const matches = allStores.offers.filter(
-      (o) => o.title.toLowerCase().includes(query) || o.subtitle.toLowerCase().includes(query),
+    const matches = sortOffers(
+      allStores.offers.filter(
+        (o) => o.title.toLowerCase().includes(query) || o.subtitle.toLowerCase().includes(query),
+      ),
+      sortBy,
     );
 
     if (matches.length === 0) {
@@ -70,8 +85,10 @@ export function OfferGrid({ data, loading, error, refetch }: OfferGridProps) {
   }
 
   const offers = data?.offers ?? [];
-  const filtered =
-    activeCategory === "All" ? offers : offers.filter((o) => o.categoryId === activeCategory);
+  const filtered = sortOffers(
+    activeCategory === "All" ? offers : offers.filter((o) => o.categoryId === activeCategory),
+    sortBy,
+  );
 
   if (filtered.length === 0) {
     return (
