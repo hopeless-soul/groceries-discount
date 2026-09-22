@@ -49,12 +49,24 @@ function StoreGroupBlock({ group }: { group: ReceiptStoreGroup }) {
             ? Math.round((1 - item.discountedPrice / item.regularPrice) * 100)
             : 0;
         return (
-          <div key={item.id} className="flex justify-between gap-3 py-1 text-sm">
-            <span className="">
-              {item.title}
-              {discountPct > 0 && (
-                <span className="ml-2 text-xs text-[#71717a]">-{discountPct}%</span>
+          <div key={item.id} className="flex items-center justify-between gap-3 py-1 text-sm">
+            <span className="flex min-w-0 items-center gap-2">
+              {item.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={item.imageUrl}
+                  alt=""
+                  className="h-6 w-6 flex-shrink-0 rounded-sm border border-[#18181b]/20 object-cover"
+                />
+              ) : (
+                <span className="h-6 w-6 flex-shrink-0 rounded-sm border border-dashed border-[#18181b]/20" />
               )}
+              <span className="">
+                {item.title}
+                {discountPct > 0 && (
+                  <span className="ml-2 text-xs text-[#71717a]">-{discountPct}%</span>
+                )}
+              </span>
             </span>
             <span className="flex-shrink-0">{item.discountedPrice.toFixed(2)}</span>
           </div>
@@ -93,7 +105,7 @@ export function ReceiptOverlay() {
       }}
     >
       <DialogPortal>
-        <DialogPrimitive.Popup className="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full max-w-[360px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-sm overflow-auto scrollbar-nonefont-mono text-[#18181b] shadow-lg data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+        <DialogPrimitive.Popup className="overflow-auto scrollbar-none fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full max-w-[360px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-sm overflow-auto scrollbar-nonefont-mono text-[#18181b] shadow-lg data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
           <DialogClose
             aria-label="Close"
             className="absolute right-2 top-5 z-10 text-xl leading-none text-[#71717a]"
