@@ -37,7 +37,7 @@ export function OfferGrid({ data, loading, error, refetch }: OfferGridProps) {
     }
 
     return (
-      <div className="flex h-full flex-col p-6">
+      <div className="flex min-h-0 flex-1 flex-col p-6">
         <p className="mb-4 flex-shrink-0 text-sm text-[#71717a]">
           {matches.length} offers match &quot;{searchQuery}&quot;
         </p>
@@ -82,7 +82,7 @@ export function OfferGrid({ data, loading, error, refetch }: OfferGridProps) {
   }
 
   return (
-    <div className="flex h-full flex-col p-0">
+    <div className="flex min-h-0 flex-1 flex-col p-0">
       {/* <p className="mb-4 flex-shrink-0 text-sm text-[#71717a]">
         {filtered.length} offers at {data?.store.label}
       </p> */}
