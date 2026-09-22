@@ -1,6 +1,7 @@
 "use client";
 
-import { Dialog, DialogPortal } from "@/components/ui/dialog";
+import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+import { DialogClose, DialogPortal } from "@/components/ui/dialog";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import { groupCartItemsByStore, type ReceiptStoreGroup } from "@/lib/receipt";
@@ -58,22 +59,20 @@ export function ReceiptOverlay() {
   const { groups, grandTotal, grandSavings } = groupCartItemsByStore(items);
 
   return (
-    <Dialog
+    <DialogPrimitive.Root
       open={receiptOpen}
       onOpenChange={(open) => {
         if (open !== receiptOpen) toggleReceiptOpen();
       }}
     >
       <DialogPortal>
-        <button
-          type="button"
-          aria-label="Close"
-          onClick={toggleReceiptOpen}
-          className="fixed right-6 top-6 z-50 text-2xl text-white"
-        >
-          ×
-        </button>
-        <div className="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full max-w-[360px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto font-mono text-[#18181b] shadow-lg">
+        <DialogPrimitive.Popup className="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full max-w-[360px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-sm font-mono text-[#18181b] shadow-lg data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+          <DialogClose
+            aria-label="Close"
+            className="absolute right-2 top-2 z-10 text-xl leading-none text-[#71717a]"
+          >
+            ×
+          </DialogClose>
           <ZigzagEdge />
           <div className="bg-[#fdfdf8] px-5 py-4">
             <p className="text-center text-base font-bold tracking-widest">GROCERIES DISCOUNT</p>
@@ -113,8 +112,8 @@ export function ReceiptOverlay() {
             </p>
           </div>
           <ZigzagEdge />
-        </div>
+        </DialogPrimitive.Popup>
       </DialogPortal>
-    </Dialog>
+    </DialogPrimitive.Root>
   );
 }
