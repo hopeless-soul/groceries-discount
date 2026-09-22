@@ -10,6 +10,7 @@ beforeEach(() => {
     cartOpen: true,
     searchQuery: "",
     showImages: false,
+    receiptOpen: false,
   });
 });
 
@@ -21,7 +22,16 @@ describe("useDashboardUiStore", () => {
       cartOpen: true,
       searchQuery: "",
       showImages: false,
+      receiptOpen: false,
     });
+  });
+
+  it("toggleReceiptOpen flips the boolean", () => {
+    expect(useDashboardUiStore.getState().receiptOpen).toBe(false);
+    useDashboardUiStore.getState().toggleReceiptOpen();
+    expect(useDashboardUiStore.getState().receiptOpen).toBe(true);
+    useDashboardUiStore.getState().toggleReceiptOpen();
+    expect(useDashboardUiStore.getState().receiptOpen).toBe(false);
   });
 
   it("toggleShowImages flips the boolean and persists it across store instances", () => {
