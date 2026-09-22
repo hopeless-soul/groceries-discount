@@ -1,13 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
+import { useLocationStore } from "@/lib/stores/location-store";
+import { ChangeLocationDialog } from "@/components/location/ChangeLocationDialog";
 
 export function AppHeader() {
   const itemCount = useCartStore((s) => s.items.length);
   const toggleCartOpen = useDashboardUiStore((s) => s.toggleCartOpen);
+  const city = useLocationStore((s) => s.city);
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const today = new Date().toLocaleDateString(undefined, {
     weekday: "long",
     year: "numeric",
@@ -24,14 +29,25 @@ export function AppHeader() {
 
       <span className="text-sm text-[#71717a]">{today}</span>
 
-      <Button variant="outline" onClick={toggleCartOpen} aria-label="Cart">
-        Cart
-        {itemCount > 0 && (
-          <Badge data-testid="cart-count-badge" className="ml-2">
-            {itemCount}
-          </Badge>
-        )}
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          onClick={() => setLocationDialogOpen(true)}
+          aria-label="Change location"
+        >
+          {city ?? "Set location"}
+        </Button>
+        <Button variant="outline" onClick={toggleCartOpen} aria-label="Cart">
+          Cart
+          {itemCount > 0 && (
+            <Badge data-testid="cart-count-badge" className="ml-2">
+              {itemCount}
+            </Badge>
+          )}
+        </Button>
+      </div>
+
+      <ChangeLocationDialog open={locationDialogOpen} onOpenChange={setLocationDialogOpen} />
     </header>
   );
 }

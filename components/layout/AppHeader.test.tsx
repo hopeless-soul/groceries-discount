@@ -1,9 +1,20 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+const replace = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace }),
+}));
+
+vi.mock("@/lib/actions/searchCities", () => ({
+  searchCities: vi.fn().mockResolvedValue([]),
+}));
+
 import { AppHeader } from "./AppHeader";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
+import { useLocationStore } from "@/lib/stores/location-store";
 import { StoreName } from "@/providers/types";
 
 const cartItem = {
@@ -23,6 +34,7 @@ const cartItem = {
 };
 
 beforeEach(() => {
+  replace.mockClear();
   localStorage.clear();
   useCartStore.setState({ items: [] });
   useDashboardUiStore.setState({
@@ -30,6 +42,7 @@ beforeEach(() => {
     activeCategory: "All",
     cartOpen: true,
   });
+  useLocationStore.setState({ country: "SK", city: "Bratislava" });
 });
 
 describe("AppHeader", () => {
@@ -49,5 +62,21 @@ describe("AppHeader", () => {
     render(<AppHeader />);
     await user.click(screen.getByRole("button", { name: /cart/i }));
     expect(useDashboardUiStore.getState().cartOpen).toBe(false);
+  });
+
+  it("shows the current city on the location trigger button", () => {
+    render(<AppHeader />);
+    expect(screen.getByRole("button", { name: /change location/i })).toHaveTextContent(
+      "Bratislava",
+    );
+  });
+
+  it("opens the change-location dialog when the location button is clicked", async () => {
+    const user = userEvent.setup();
+    render(<AppHeader />);
+
+    await user.click(screen.getByRole("button", { name: /change location/i }));
+
+    expect(screen.getByRole("combobox", { name: /country/i })).toHaveTextContent("SK");
   });
 });
