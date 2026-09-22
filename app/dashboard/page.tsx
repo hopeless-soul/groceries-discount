@@ -7,6 +7,8 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { OfferGrid } from "@/components/dashboard/OfferGrid";
 import { CartPanel } from "@/components/dashboard/CartPanel";
+import { ReceiptButton } from "@/components/dashboard/ReceiptButton";
+import { ReceiptOverlay } from "@/components/dashboard/ReceiptOverlay";
 import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 import { Input } from "@/components/ui/input";
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -78,6 +80,8 @@ export default function DashboardPage() {
         </div>
         <CartPanel />
       </div>
+      <ReceiptButton />
+      <ReceiptOverlay />
     </div>
   );
 }
