@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { clearFetchCache } from "@/lib/cache/fetchCache";
 
 interface LocationState {
   country: string | null;
@@ -10,10 +11,16 @@ interface LocationState {
 
 export const useLocationStore = create<LocationState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       country: null,
       city: null,
-      setLocation: (country, city) => set({ country, city }),
+      setLocation: (country, city) => {
+        const current = get();
+        if (current.country !== country || current.city !== city) {
+          clearFetchCache();
+        }
+        set({ country, city });
+      },
       clear: () => set({ country: null, city: null }),
     }),
     { name: "groceries-discount:location" },

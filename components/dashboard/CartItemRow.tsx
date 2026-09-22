@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { getUrgencyColor } from "@/lib/validity";
 import type { CartItem } from "@/lib/types";
 
@@ -15,11 +14,13 @@ export function CartItemRow({ item, onRemove }: CartItemRowProps) {
   return (
     <div className="flex items-start gap-3 border-b border-[#e4e4e7] py-3">
       {item.imageUrl ? (
-        <Image
+        // next/image requires whitelisting each provider's image host in
+        // next.config.ts; Lidl's isn't confirmed yet, so a plain <img> is
+        // used to render both stores' images without that dependency.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
           src={item.imageUrl}
           alt={item.title}
-          width={44}
-          height={44}
           loading="lazy"
           className="h-11 w-11 flex-shrink-0 rounded-[6px] object-cover"
         />

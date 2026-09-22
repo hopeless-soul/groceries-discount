@@ -20,7 +20,7 @@ export function OfferCard({ offer, storeId, storeLabel, storeDotColor }: OfferCa
   const showImages = useDashboardUiStore((s) => s.showImages);
 
   return (
-    <div className="flex flex-col gap-[10px] rounded-xl border border-[#e4e4e7] bg-white p-[14px]">
+    <div className="flex flex-col gap-[10px] rounded-xl border border-[#e4e4e7] bg-white p-[14px] transition-all duration-300 ease-in-out">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: storeDotColor }} />

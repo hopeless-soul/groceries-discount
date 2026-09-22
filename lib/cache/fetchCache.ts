@@ -10,7 +10,13 @@ interface CachedFetchOptions {
 }
 
 const DEFAULT_TTL_MS = 12 * 60 * 60 * 1000;
-const STORAGE_PREFIX = "groceries-discount:cache:";
+/**
+ * Bump the version segment whenever `DashboardData`'s shape changes (e.g. a
+ * new offer field). Entries cached under a stale prefix are simply never
+ * read again — they age out of localStorage naturally under their own TTL —
+ * rather than being served for up to DEFAULT_TTL_MS with the old shape.
+ */
+const STORAGE_PREFIX = "groceries-discount:cache:v2:";
 
 const memoryCache = new Map<string, CacheEntry<unknown>>();
 const inFlight = new Map<string, Promise<unknown>>();

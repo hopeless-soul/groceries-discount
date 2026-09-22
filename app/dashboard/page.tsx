@@ -50,7 +50,7 @@ export default function DashboardPage() {
           <CategoryList categories={categories} totalCount={totalCount} />
         </div>
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex h-[60px] flex-shrink-0 items-center border-b border-[#e4e4e7] bg-white px-6">
+          <div className="flex justify-between h-[60px] flex-shrink-0 items-center border-b border-[#e4e4e7] bg-white px-6">
             <div className="relative max-w-sm w-full">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#71717a]" />
               <Input
