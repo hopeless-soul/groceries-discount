@@ -59,5 +59,5 @@ Medium and phone share the same structural behavior (drawers instead of static c
 
 ## Testing
 
-- Manual check at pc/medium/phone widths: sidebar drawer opens/closes via the new floating button, cart drawer opens/closes via the existing header button, filters popover opens/closes and both controls still work, AppHeader doesn't overflow at phone width.
-- No new automated tests planned beyond existing coverage, since this is a CSS/layout-only change to existing, already-tested state (`dashboard-ui-store`) plus two new presentational wrapper components with no business logic.
+- Manual checks by user.
+- No new automated tests planned beyond existing coverage.
