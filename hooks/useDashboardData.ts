@@ -27,6 +27,7 @@ export function useDashboardData(storeName: StoreName): UseDashboardDataResult {
 
     (async () => {
       if (!cancelled) {
+        setData(null);
         setLoading(true);
         setError(null);
       }

@@ -90,4 +90,20 @@ describe("useDashboardData", () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
   });
+
+  it("clears the previous store's data synchronously when storeName changes", async () => {
+    const lidlData = { ...sampleData, store: { id: "lidl", label: "Lidl", dotColor: "#2563eb" } };
+    fetchDashboardData.mockResolvedValue(lidlData);
+    const { result, rerender } = renderHook(
+      ({ store }) => useDashboardData(store),
+      { initialProps: { store: StoreName.Lidl } },
+    );
+    await waitFor(() => expect(result.current.data).toEqual(lidlData));
+
+    rerender({ store: StoreName.Kaufland });
+    // Must not still show Lidl's data while Kaufland's fetch is in flight.
+    expect(result.current.data).toBeNull();
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+  });
 });
