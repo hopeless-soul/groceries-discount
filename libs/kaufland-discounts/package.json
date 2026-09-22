@@ -1,0 +1,26 @@
+{
+  "name": "kaufland-discounts",
+  "version": "0.1.0",
+  "description": "Look up current Kaufland discounts for a city (TypeScript port of the Python CLI). Server-side use only (Node/Bun/Deno/edge runtime) -- see docs/typescript-api.md.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "pretest": "tsc -p tsconfig.json",
+    "test": "node --experimental-strip-types --test test/*.test.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}
