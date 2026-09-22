@@ -4,23 +4,15 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
-import { StoreList } from "@/components/dashboard/StoreList";
-import { CategoryList } from "@/components/dashboard/CategoryList";
+import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { OfferGrid } from "@/components/dashboard/OfferGrid";
 import { CartPanel } from "@/components/dashboard/CartPanel";
+import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useHasHydrated } from "@/hooks/useHasHydrated";
 import { useLocationStore } from "@/lib/stores/location-store";
-import { useDashboardUiStore, type SortOption } from "@/lib/stores/dashboard-ui-store";
-
-const SORT_LABELS: Record<SortOption, string> = {
-  default: "Default",
-  discountPercent: "Most discounted %",
-  discountAmount: "Most discounted €",
-};
+import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -28,7 +20,6 @@ export default function DashboardPage() {
   const country = useLocationStore((s) => s.country);
   const city = useLocationStore((s) => s.city);
   const selectedStore = useDashboardUiStore((s) => s.selectedStore);
-  const cartOpen = useDashboardUiStore((s) => s.cartOpen);
   const searchQuery = useDashboardUiStore((s) => s.searchQuery);
   const setSearchQuery = useDashboardUiStore((s) => s.setSearchQuery);
   const showImages = useDashboardUiStore((s) => s.showImages);
@@ -54,10 +45,7 @@ export default function DashboardPage() {
     <div className="flex h-full flex-col">
       <AppHeader />
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-[240px] overflow-y-auto border-r border-[#e4e4e7] bg-white">
-          <StoreList />
-          <CategoryList categories={categories} totalCount={totalCount} />
-        </div>
+        <DashboardSidebar categories={categories} totalCount={totalCount} />
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex justify-between h-[60px] flex-shrink-0 items-center border-b border-[#e4e4e7] bg-white px-6">
             <div className="relative max-w-sm w-full">
@@ -80,28 +68,16 @@ export default function DashboardPage() {
                 </button>
               )}
             </div>
-            <div className="flex items-center">
-              <label className="ml-4 flex items-center gap-2 text-sm text-[#71717a]">
-                <Switch checked={showImages} onCheckedChange={toggleShowImages} />
-                Show images
-              </label>
-              <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-                <SelectTrigger aria-label="Sort by" className="ml-4 w-[190px]">
-                  <SelectValue placeholder="Sort">{(value) => SORT_LABELS[value as SortOption]}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {(Object.keys(SORT_LABELS) as SortOption[]).map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {SORT_LABELS[option]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <DashboardFilters
+              showImages={showImages}
+              toggleShowImages={toggleShowImages}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+            />
           </div>
           <OfferGrid data={data} loading={loading} error={error} refetch={refetch} />
         </div>
-        {cartOpen && <CartPanel />}
+        <CartPanel />
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ export function AppHeader() {
         <span className="text-base font-semibold">Basket</span>
       </div>
 
-      <span className="text-sm text-[#71717a]">{today}</span>
+      <span className="hidden text-sm text-[#71717a] lg:inline">{today}</span>
 
       <div className="flex items-center gap-2">
         <Button

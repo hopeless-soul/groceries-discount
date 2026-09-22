@@ -80,4 +80,15 @@ describe("AppHeader", () => {
 
     expect(screen.getByRole("combobox", { name: /country/i })).toHaveTextContent("SK");
   });
+
+  it("hides the date below the lg breakpoint", () => {
+    render(<AppHeader />);
+    const today = new Date().toLocaleDateString(undefined, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    expect(screen.getByText(today)).toHaveClass("hidden", "lg:inline");
+  });
 });
