@@ -6,6 +6,7 @@ import type { UseDashboardDataResult } from "@/hooks/useDashboardData";
 import { useAllStoresOffers } from "@/hooks/useAllStoresOffers";
 import { useDashboardUiStore, type SortOption } from "@/lib/stores/dashboard-ui-store";
 import { useLocationStore } from "@/lib/stores/location-store";
+import { normalizeSearchText } from "@/lib/normalizeText";
 import type { Offer } from "@/lib/types";
 
 type OfferGridProps = UseDashboardDataResult;
@@ -27,7 +28,7 @@ export function OfferGrid({ data, loading, error, refetch }: OfferGridProps) {
   const country = useLocationStore((s) => s.country);
   const city = useLocationStore((s) => s.city);
 
-  const query = searchQuery.trim().toLowerCase();
+  const query = normalizeSearchText(searchQuery);
   const isSearching = query.length > 0;
   const allStores = useAllStoresOffers(country, city, isSearching);
 
@@ -42,7 +43,8 @@ export function OfferGrid({ data, loading, error, refetch }: OfferGridProps) {
 
     const matches = sortOffers(
       allStores.offers.filter(
-        (o) => o.title.toLowerCase().includes(query) || o.subtitle.toLowerCase().includes(query),
+        (o) =>
+          normalizeSearchText(o.title).includes(query) || normalizeSearchText(o.subtitle).includes(query),
       ),
       sortBy,
     );
