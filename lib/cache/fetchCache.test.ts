@@ -66,7 +66,7 @@ describe("cachedFetch", () => {
     const fetcher = vi.fn().mockResolvedValue({ value: 7 });
     await cachedFetch("k5", fetcher);
 
-    const raw = localStorage.getItem("groceries-discount:cache:v2:k5");
+    const raw = localStorage.getItem("groceries-discount:cache:v3:k5");
     expect(raw).not.toBeNull();
     expect(JSON.parse(raw!)).toMatchObject({ data: { value: 7 } });
   });
@@ -93,7 +93,7 @@ describe("invalidateFetchCache", () => {
     await cachedFetch("k7", fetcher);
     invalidateFetchCache("k7");
 
-    expect(localStorage.getItem("groceries-discount:cache:v2:k7")).toBeNull();
+    expect(localStorage.getItem("groceries-discount:cache:v3:k7")).toBeNull();
 
     const result = await cachedFetch("k7", fetcher);
 

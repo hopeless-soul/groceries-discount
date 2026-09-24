@@ -30,11 +30,11 @@ describe("useLocationStore", () => {
     useLocationStore.getState().setLocation("SK", "Bratislava");
     const key = buildCacheKey("dashboard", "lidl", "SK", "Bratislava");
     await cachedFetch(key, async () => "cached-value");
-    expect(localStorage.getItem("groceries-discount:cache:v2:" + key)).not.toBeNull();
+    expect(localStorage.getItem("groceries-discount:cache:v3:" + key)).not.toBeNull();
 
     useLocationStore.getState().setLocation("CZ", "Prague");
 
-    expect(localStorage.getItem("groceries-discount:cache:v2:" + key)).toBeNull();
+    expect(localStorage.getItem("groceries-discount:cache:v3:" + key)).toBeNull();
   });
 
   it("setLocation does not clear the fetch cache when country/city are unchanged", async () => {
@@ -44,6 +44,6 @@ describe("useLocationStore", () => {
 
     useLocationStore.getState().setLocation("SK", "Bratislava");
 
-    expect(localStorage.getItem("groceries-discount:cache:v2:" + key)).not.toBeNull();
+    expect(localStorage.getItem("groceries-discount:cache:v3:" + key)).not.toBeNull();
   });
 });

@@ -63,6 +63,13 @@ export class LidlProvider implements GroceryProvider {
     const normalizedOffers: Offer[] = [];
 
     for (const offer of offers) {
+      const regularPrice = offer.priceBox?.smallPartNumeric ?? offer.priceBox?.largePartNumeric ?? 0;
+      const discountedPrice = offer.priceBox?.largePartNumeric ?? 0;
+
+      // Special offers (e.g. "3+1" multi-buy) come back from Lidl with a 0.00 price.
+      // They are CURRENTLY DISABLED: skipped entirely until we support rendering them.
+      if (discountedPrice === 0) continue;
+
       const categoryName = offer.category ?? "Other";
       const categoryId = slugify(categoryName);
       const existing = categoryCounts.get(categoryId);
@@ -71,8 +78,6 @@ export class LidlProvider implements GroceryProvider {
         count: (existing?.count ?? 0) + 1,
       });
 
-      const regularPrice = offer.priceBox?.smallPartNumeric ?? offer.priceBox?.largePartNumeric ?? 0;
-      const discountedPrice = offer.priceBox?.largePartNumeric ?? 0;
       const discountPercent =
         regularPrice > 0 ? Math.round((1 - discountedPrice / regularPrice) * 100) : 0;
       const validUntil = offer.endValidityDate ?? new Date().toISOString();
@@ -86,6 +91,7 @@ export class LidlProvider implements GroceryProvider {
         regularPrice,
         discountedPrice,
         discountPercent,
+        validFrom: offer.startValidityDate ?? null,
         validUntil,
         daysLeft: computeDaysLeft(validUntil),
         ringPercent: computeRingPercent(validFrom, validUntil),

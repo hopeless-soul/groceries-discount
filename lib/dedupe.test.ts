@@ -11,6 +11,7 @@ function offer(overrides: Partial<Offer>): Offer {
     regularPrice: 1.5,
     discountedPrice: 1.0,
     discountPercent: 33,
+    validFrom: null,
     validUntil: "2026-01-01",
     daysLeft: 5,
     ringPercent: 50,

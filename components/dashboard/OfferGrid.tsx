@@ -9,7 +9,7 @@ import { useLocationStore } from "@/lib/stores/location-store";
 import { normalizeSearchText } from "@/lib/normalizeText";
 import type { Offer } from "@/lib/types";
 
-type OfferGridProps = UseDashboardDataResult;
+type OfferGridProps = Omit<UseDashboardDataResult, "upcoming">;
 
 function sortOffers<T extends Offer>(offers: T[], sortBy: SortOption): T[] {
   if (sortBy === "default") return offers;

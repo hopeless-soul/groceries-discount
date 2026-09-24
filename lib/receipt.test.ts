@@ -11,6 +11,7 @@ function makeItem(overrides: Partial<CartItem>): CartItem {
     regularPrice: 2,
     discountedPrice: 1,
     discountPercent: 50,
+    validFrom: null,
     validUntil: "2026-09-22T00:00:00.000Z",
     daysLeft: 4,
     ringPercent: 50,

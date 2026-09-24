@@ -115,6 +115,29 @@ describe("LidlProvider", () => {
     expect(data.offers[0].id).not.toBe(data.offers[1].id);
   });
 
+  it("hides 0.00-price special offers (e.g. 3+1) from the result", async () => {
+    const specialOffer = {
+      id: "off-special",
+      title: "Pivo 3+1",
+      category: "Dairy & Eggs",
+      startValidityDate: "2026-09-15T00:00:00.000Z",
+      endValidityDate: "2026-09-22T00:00:00.000Z",
+      priceBox: { largePartNumeric: 0 },
+    };
+
+    mockFetchSequence(
+      { ok: true, json: async () => storeSearchResponse },
+      {
+        ok: true,
+        json: async () => ({ totalOffers: 2, offers: [...offersResponse.offers, specialOffer] }),
+      },
+    );
+    const data = await new LidlProvider().fetch("SK", "Bratislava");
+
+    expect(data.offers.map((o) => o.id)).toEqual(["off-1"]);
+    expect(data.categories).toEqual([{ id: "dairy-eggs", name: "Dairy & Eggs", count: 1 }]);
+  });
+
   it("returns empty DashboardData when no store matches the city", async () => {
     mockFetchSequence(
       { ok: true, json: async () => [] },

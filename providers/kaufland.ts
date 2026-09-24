@@ -53,6 +53,7 @@ export class KauflandProvider implements GroceryProvider {
         regularPrice,
         discountedPrice: o.price,
         discountPercent,
+        validFrom: o.valid_from,
         validUntil: o.valid_to,
         daysLeft: computeDaysLeft(o.valid_to),
         ringPercent: computeRingPercent(o.valid_from, o.valid_to),

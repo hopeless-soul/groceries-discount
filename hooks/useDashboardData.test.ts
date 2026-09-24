@@ -108,4 +108,32 @@ describe("useDashboardData", () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
   });
+
+  it("hides offers whose discount hasn't started yet and exposes them as upcoming", async () => {
+    const base = {
+      subtitle: "",
+      categoryId: "bakery",
+      regularPrice: 2,
+      discountedPrice: 1,
+      discountPercent: 50,
+      validUntil: "2999-01-10T00:00:00.000Z",
+      daysLeft: 5,
+      ringPercent: 0,
+      imageUrl: null,
+    };
+    fetchDashboardData.mockResolvedValueOnce({
+      ...sampleData,
+      categories: [{ id: "bakery", name: "Bakery", count: 2 }],
+      offers: [
+        { ...base, id: "now", title: "Bread", validFrom: "2000-01-01T00:00:00.000Z" },
+        { ...base, id: "later", title: "Rolls", validFrom: "2999-01-01T00:00:00.000Z" },
+      ],
+    });
+    const { result } = renderHook(() => useDashboardData(StoreName.Lidl));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.data?.offers.map((o) => o.id)).toEqual(["now"]);
+    expect(result.current.data?.categories).toEqual([{ id: "bakery", name: "Bakery", count: 1 }]);
+    expect(result.current.upcoming.map((o) => o.id)).toEqual(["later"]);
+  });
 });

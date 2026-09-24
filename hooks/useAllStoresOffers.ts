@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { isOfferAvailable } from "@/lib/availability";
 import { buildCacheKey, cachedFetch } from "@/lib/cache/fetchCache";
 import { fetchDashboardData } from "@/lib/fetchDashboardData";
 import type { Offer } from "@/lib/types";
@@ -47,7 +48,7 @@ export function useAllStoresOffers(
         if (!cancelled) {
           setOffers(
             results.flatMap((data) =>
-              data.offers.map((offer) => ({
+              data.offers.filter((offer) => isOfferAvailable(offer)).map((offer) => ({
                 ...offer,
                 storeId: data.store.id,
                 storeLabel: data.store.label,

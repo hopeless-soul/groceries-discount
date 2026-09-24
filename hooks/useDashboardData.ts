@@ -1,14 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { splitByAvailability } from "@/lib/availability";
 import { buildCacheKey, cachedFetch, invalidateFetchCache } from "@/lib/cache/fetchCache";
 import { fetchDashboardData } from "@/lib/fetchDashboardData";
 import { useLocationStore } from "@/lib/stores/location-store";
-import type { DashboardData } from "@/lib/types";
+import type { DashboardData, Offer } from "@/lib/types";
 import type { StoreName } from "@/providers/types";
 
 export interface UseDashboardDataResult {
+  /** Only offers whose discount has already started. */
   data: DashboardData | null;
+  /** Offers whose discount hasn't started yet. */
+  upcoming: Offer[];
   loading: boolean;
   error: Error | null;
   refetch: () => void;
@@ -58,5 +62,10 @@ export function useDashboardData(storeName: StoreName): UseDashboardDataResult {
     setVersion((v) => v + 1);
   }, [storeName, country, city]);
 
-  return { data, loading, error, refetch };
+  const { available, upcoming } = useMemo(
+    () => (data ? splitByAvailability(data) : { available: null, upcoming: [] }),
+    [data],
+  );
+
+  return { data: available, upcoming, loading, error, refetch };
 }

@@ -10,6 +10,7 @@ interface RawOffer {
   subtitle?: string;
   unit?: string;
   price?: number;
+  formattedPrice?: string;
   formattedOldPrice?: string;
   discount?: number;
   basePrice?: string;
@@ -17,7 +18,12 @@ interface RawOffer {
   dateFrom?: string;
   dateTo?: string;
   label?: string;
+  /** Kaufland Card ("Xtra") tier -- present only on offers with a card-holder price. */
   loyaltyDiscount?: number;
+  loyaltyFormattedPrice?: string;
+  loyaltyFormattedOldPrice?: string;
+  loyaltyBasePrice?: string;
+  loyaltyFormattedBasePrice?: string;
   listImage?: string;
 }
 
@@ -103,11 +109,36 @@ export function extractOfferTemplate(html: string): OfferTemplate {
   throw new UpstreamError("Could not find an OfferTemplate window.SSR block in the offers page");
 }
 
-function parseOldPrice(rawOffer: RawOffer): number | null {
-  const text = rawOffer.formattedOldPrice;
+/** Parse a comma-decimal price string like "1,69"; null when missing or unparseable. */
+function parsePrice(text: string | undefined): number | null {
   if (!text) return null;
   const value = Number.parseFloat(text.replace(",", "."));
   return Number.isNaN(value) ? null : value;
+}
+
+/**
+ * Price fields for one offer. When the offer carries a Kaufland Card ("Xtra") price,
+ * that tier wins: it's the lowest price on offer, and on many offers (label "none")
+ * it's the only discount -- there `formattedOldPrice` is absent and the regular price
+ * only appears as `loyaltyFormattedOldPrice`.
+ */
+function resolvePricing(raw: RawOffer): Pick<Offer, "price" | "old_price" | "discount_percent" | "base_price_text"> {
+  const basePriceText = raw.basePrice ?? raw.formattedBasePrice ?? null;
+  const xtraPrice = parsePrice(raw.loyaltyFormattedPrice);
+  if (xtraPrice !== null) {
+    return {
+      price: xtraPrice,
+      old_price: parsePrice(raw.formattedOldPrice) ?? parsePrice(raw.loyaltyFormattedOldPrice),
+      discount_percent: raw.loyaltyDiscount ?? raw.discount ?? null,
+      base_price_text: raw.loyaltyBasePrice ?? raw.loyaltyFormattedBasePrice ?? basePriceText,
+    };
+  }
+  return {
+    price: raw.price ?? 0,
+    old_price: parsePrice(raw.formattedOldPrice),
+    discount_percent: raw.discount ?? null,
+    base_price_text: basePriceText,
+  };
 }
 
 export function buildDiscountsResponse(
@@ -144,11 +175,8 @@ export function buildDiscountsResponse(
           title: raw.title ?? "",
           subtitle: raw.subtitle ?? null,
           unit: raw.unit ?? "",
-          price: raw.price ?? 0,
-          old_price: parseOldPrice(raw),
+          ...resolvePricing(raw),
           currency,
-          discount_percent: raw.discount ?? null,
-          base_price_text: raw.basePrice ?? raw.formattedBasePrice ?? null,
           valid_from: raw.dateFrom ?? "",
           valid_to: raw.dateTo ?? "",
           category_id: categoryId,

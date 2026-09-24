@@ -18,6 +18,8 @@ export interface Offer {
   regularPrice: number;
   discountedPrice: number;
   discountPercent: number;
+  /** Start of the discount; null when the source doesn't report one (treated as already available). */
+  validFrom: string | null;
   validUntil: string;
   daysLeft: number;
   ringPercent: number;

@@ -8,6 +8,7 @@ interface RawOffer {
     subtitle?: string;
     unit?: string;
     price?: number;
+    formattedPrice?: string;
     formattedOldPrice?: string;
     discount?: number;
     basePrice?: string;
@@ -15,7 +16,12 @@ interface RawOffer {
     dateFrom?: string;
     dateTo?: string;
     label?: string;
+    /** Kaufland Card ("Xtra") tier -- present only on offers with a card-holder price. */
     loyaltyDiscount?: number;
+    loyaltyFormattedPrice?: string;
+    loyaltyFormattedOldPrice?: string;
+    loyaltyBasePrice?: string;
+    loyaltyFormattedBasePrice?: string;
     listImage?: string;
 }
 interface RawCategory {
