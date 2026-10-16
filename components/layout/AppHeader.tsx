@@ -7,6 +7,7 @@ import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import { useLocationStore } from "@/lib/stores/location-store";
 import { ChangeLocationDialog } from "@/components/location/ChangeLocationDialog";
+import BascetLogo from "@/public/bascet_logo.svg";
 
 export function AppHeader() {
   const itemCount = useCartStore((s) => s.items.length);
@@ -29,7 +30,7 @@ export function AppHeader() {
         aria-label="Open menu"
         className="flex items-center gap-2 lg:cursor-default"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-[#18181b]" />
+        <BascetLogo aria-hidden="true" className="h-8 w-8 text-[#18181b]" />
         <span className="text-base font-semibold">Basket</span>
       </button>
 

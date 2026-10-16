@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CityAutocomplete } from "@/components/location/CityAutocomplete";
 import { COUNTRIES } from "@/lib/locations";
+import BascetLogo from '@/public/bascet_logo.svg';
 
 interface LocationSelectCardProps {
   onSubmit: (country: string, city: string) => void;
@@ -23,14 +24,10 @@ export function LocationSelectCard({
   const canContinue = Boolean(country && city);
 
   return (
-    <div className="w-full max-w-[400px] rounded-xl border border-[#e4e4e7] bg-white p-7 shadow-sm flex flex-col gap-[18px]">
+    <div className="w-full max-w-100 rounded-xl border border-[#e4e4e7] bg-white p-7 shadow-sm flex flex-col gap-[18px]">
       <div className="flex flex-col items-center gap-2 text-center">
         <div className="flex h-11 w-11 items-center justify-center rounded-[10px] bg-[#18181b] text-white">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-            <path d="M3 6h18" />
-            <path d="M16 10a4 4 0 0 1-8 0" />
-          </svg>
+          <BascetLogo aria-hidden="true" className="h-[24] w-[24] text-white" />
         </div>
         <h1 className="text-xl font-semibold">Basket</h1>
         <p className="text-sm text-[#71717a]">Find current grocery discounts near you.</p>
