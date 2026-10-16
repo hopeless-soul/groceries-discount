@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Menu } from "lucide-react";
 import { StoreList } from "@/components/dashboard/StoreList";
 import { CategoryList } from "@/components/dashboard/CategoryList";
@@ -18,9 +19,17 @@ export function DashboardSidebar({ categories, totalCount }: DashboardSidebarPro
   const sidebarOpen = useDashboardUiStore((s) => s.sidebarOpen);
   const toggleSidebarOpen = useDashboardUiStore((s) => s.toggleSidebarOpen);
 
+  // Force the drawer closed whenever the viewport changes size, so it never
+  // reappears open after crossing the breakpoint.
+  useEffect(() => {
+    if (useDashboardUiStore.getState().sidebarOpen) {
+      toggleSidebarOpen();
+    }
+  }, [isDesktop, toggleSidebarOpen]);
+
   if (isDesktop) {
     return (
-      <div className="w-[240px] overflow-y-auto border-r border-[#e4e4e7] bg-white">
+      <div className="w-60 overflow-y-auto border-r border-[#e4e4e7] bg-white">
         <StoreList />
         <CategoryList categories={categories} totalCount={totalCount} />
       </div>

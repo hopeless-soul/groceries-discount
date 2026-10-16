@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Collapsible } from "@base-ui/react/collapsible";
 import { Button } from "@/components/ui/button";
 import { CartItemRow } from "@/components/dashboard/CartItemRow";
@@ -31,6 +31,14 @@ export function CartPanel() {
     setSuppressInitialMobileOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Force the cart closed whenever the viewport shrinks into the small-screen layout.
+  // It only fires on the breakpoint change, so the user can reopen it afterwards.
+  useEffect(() => {
+    if (!isDesktop && useDashboardUiStore.getState().cartOpen) {
+      toggleCartOpen();
+    }
+  }, [isDesktop, toggleCartOpen]);
 
   const content = (
     <>

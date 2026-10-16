@@ -180,10 +180,10 @@ export function ReceiptOverlay() {
 
             <div
               aria-hidden
-              className="mx-auto mt-3 h-10 w-full max-w-[220px]"
+              className="mx-auto mt-3 h-10 w-full max-w-55"
               style={{ backgroundImage: barcodeGradient }}
             />
-            <p className="text-center text-xs text-[#71717a]">
+            <p className="text-center text-xs text-[#71717a] mt-1">
               {groups.reduce((sum, g) => sum + g.items.length, 0)} ITEMS
             </p>
           </div>
