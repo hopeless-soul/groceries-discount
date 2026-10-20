@@ -4,9 +4,9 @@ import { VirtualizedOfferGrid } from "./VirtualizedOfferGrid";
 import { makeDisplayOffer } from "@/lib/test-utils/fixtures";
 import { setDesktop } from "@/lib/test-utils/matchMedia";
 
-function setPhone(matches: boolean) {
+function setPhone(matches: boolean, wide = false) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-    matches: query === "(max-width: 767px)" ? matches : false,
+    matches: query === "(max-width: 767px)" ? matches : query === "(min-width: 1536px)" && wide,
     media: query,
     onchange: null,
     addEventListener: vi.fn(),
@@ -40,6 +40,14 @@ describe("VirtualizedOfferGrid", () => {
 
     expect(document.querySelector(".grid-cols-3")).toBeInTheDocument();
     expect(document.querySelector(".grid-cols-2")).not.toBeInTheDocument();
+  });
+
+  it("renders 4 columns per row on the widest screens", () => {
+    setPhone(false, true);
+    render(<VirtualizedOfferGrid offers={offers(8)} />);
+
+    expect(document.querySelector(".grid-cols-4")).toBeInTheDocument();
+    expect(document.querySelector(".grid-cols-3")).not.toBeInTheDocument();
   });
 
   it("only mounts a windowed subset of cards for a large offer list", () => {

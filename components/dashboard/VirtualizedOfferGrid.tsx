@@ -11,12 +11,15 @@ interface VirtualizedOfferGridProps {
 }
 
 const PHONE_QUERY = "(max-width: 767px)";
+// Tailwind's 2xl breakpoint.
+const WIDE_QUERY = "(min-width: 1536px)";
 const ESTIMATED_ROW_HEIGHT = 280;
 
 export function VirtualizedOfferGrid({ offers }: VirtualizedOfferGridProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const isPhone = useMediaQuery(PHONE_QUERY);
-  const COLUMNS = isPhone ? 2 : 3;
+  const isWide = useMediaQuery(WIDE_QUERY);
+  const COLUMNS = isPhone ? 2 : isWide ? 4 : 3;
 
   const rows: DisplayOffer[][] = [];
   for (let i = 0; i < offers.length; i += COLUMNS) {
@@ -53,7 +56,9 @@ export function VirtualizedOfferGrid({ offers }: VirtualizedOfferGridProps) {
                 width: "100%",
                 transform: `translateY(${virtualRow.start}px)`,
               }}
-              className={isPhone ? "grid grid-cols-2 gap-3 pb-3" : "grid grid-cols-3 gap-5 pb-5"}
+              className={
+                isPhone ? "grid grid-cols-2 gap-3 pb-3" : `grid ${isWide ? "grid-cols-4" : "grid-cols-3"} gap-5 pb-5`
+              }
             >
               {row.map((offer) => (
                 <OfferCard key={`${offer.shop}-${offer.id}`} offer={offer} />

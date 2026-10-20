@@ -7,12 +7,19 @@ export const groceryCategoryKeys = [
   'vegetables',
   'meat',
   'seafood',
-  'sport',
+  // 'sport',
   'beverages',
   'snacks',
   'grains&pasta',
   'sauces',
   'household&cleaning',
+  // 
+  'nonfood',
+  'sportsfood',
+  'pet',
+  'sweets',
+  'milk&dairy',
+  'baby'
 ] as const;
 export type GroceryCategoryKey = (typeof groceryCategoryKeys)[number];
 
@@ -30,10 +37,17 @@ export const categoryDescriptions: Record<CategoryKey, string> = {
   vegetables: 'Vegetables',
   meat: 'Meat',
   seafood: 'Fish & Seafood',
-  sport: 'Sports Nutrition',
+  // sport: 'Sports Nutrition',
   beverages: 'Beverages',
   snacks: 'Snacks & Sweets',
   'grains&pasta': 'Grains & Pasta',
   sauces: 'Sauces',
   'household&cleaning': 'Household',
+  // 
+  'nonfood': 'Non food products',
+  'sportsfood': 'Sports Nutrition',
+  'pet': 'Pet',
+  'sweets': 'Sweets',
+  'milk&dairy': 'Dairy foods',
+  'baby': 'Baby'
 };
