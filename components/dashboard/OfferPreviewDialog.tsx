@@ -19,7 +19,7 @@ export function OfferPreviewDialog({ offer, children, className = "block w-full"
       <DialogTrigger aria-label="Preview image" className={`cursor-zoom-in ${className}`}>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-[min(640px,calc(100vw-32px))] border-0">
+      <DialogContent className="max-w-[min(640px,calc(100vw-32px))] max-h-[calc(100dvh-96px)] border-0">
         <OfferCard offer={offer} preview />
       </DialogContent>
     </Dialog>
