@@ -1,6 +1,8 @@
 "use client";
 
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DialogClose } from "@/components/ui/dialog";
 import { OfferImage } from "@/components/dashboard/OfferImage";
 import { OfferPreviewDialog } from "@/components/dashboard/OfferPreviewDialog";
 import { ValidityRing } from "@/components/dashboard/ValidityRing";
@@ -32,7 +34,13 @@ export function OfferCard({ offer, preview = false }: OfferCardProps) {
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: shop.color }} />
           {shop.name}
         </div>
-        <ValidityRing ringPercent={offer.ringPercent} daysLeft={offer.daysLeft} />
+        {preview ? (
+          <DialogClose aria-label="Close" className="-m-2 flex p-2 text-[#71717a]">
+            <X className="size-4" />
+          </DialogClose>
+        ) : (
+          <ValidityRing ringPercent={offer.ringPercent} daysLeft={offer.daysLeft} />
+        )}
       </div>
 
       {preview ? (
@@ -52,27 +60,38 @@ export function OfferCard({ offer, preview = false }: OfferCardProps) {
         </div>
       )}
 
-      <div>
-        <p className="text-sm font-semibold">{offer.displayTitle}</p>
-        {offer.displaySubtitle && <p className="text-xs text-[#71717a]">{offer.displaySubtitle}</p>}
-      </div>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-col gap-[10px]">
+          <div>
+            <p className="text-sm font-semibold">{offer.displayTitle}</p>
+            {offer.displaySubtitle && <p className="text-xs text-[#71717a]">{offer.displaySubtitle}</p>}
+          </div>
 
-      <div className="flex items-center gap-2">
-        {offer.basePrice != null && (
-          <span className="text-xs text-[#a1a1aa] line-through">{offer.basePrice.toFixed(2)}</span>
-        )}
-        <span className="text-lg font-bold">{price != null ? price.toFixed(2) : "—"}</span>
-        {percent != null && (
-          <span
-            className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${percent === 0
-                ? "bg-[#f4f4f5] text-[#71717a]"
-                : percent > 50
-                  ? "bg-[#ffedd5] text-[#c2410c]"
-                  : "bg-[#dcfce7] text-[#15803d]"
-              }`}
-          >
-            -{percent}%
-          </span>
+          <div className="flex items-center gap-2">
+            {offer.basePrice != null && (
+              <span className="text-xs text-[#a1a1aa] line-through">{offer.basePrice.toFixed(2)}</span>
+            )}
+            <span className="text-lg font-bold">{price != null ? price.toFixed(2) : "—"}</span>
+            {percent != null && (
+              <span
+                className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${percent === 0
+                    ? "bg-[#f4f4f5] text-[#71717a]"
+                    : percent > 50
+                      ? "bg-[#ffedd5] text-[#c2410c]"
+                      : "bg-[#dcfce7] text-[#15803d]"
+                  }`}
+              >
+                -{percent}%
+              </span>
+            )}
+          </div>
+        </div>
+        {preview && (
+          <div className="flex self-stretch items-start">
+            <div className="origin-top-right scale-130">
+              <ValidityRing ringPercent={offer.ringPercent} daysLeft={offer.daysLeft} />
+            </div>
+          </div>
         )}
       </div>
 

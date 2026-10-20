@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { OfferCard } from "./OfferCard";
 import { useCartStore } from "@/lib/stores/cart-store";
@@ -62,6 +62,9 @@ describe("OfferCard", () => {
     const dialog = await screen.findByRole("dialog");
     expect(within(dialog).getByText("Milk")).toBeInTheDocument();
     expect(within(dialog).queryByRole("button", { name: /add to cart/i })).not.toBeInTheDocument();
+
+    await user.click(within(dialog).getByRole("button", { name: "Close" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
   it("hides the offer image when showImages is off, even if imageUrl is present", () => {
