@@ -1,27 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { groupCartItemsByStore } from "./receipt";
-import type { CartItem } from "@/lib/types";
-
-function makeItem(overrides: Partial<CartItem>): CartItem {
-  return {
-    id: "o1",
-    title: "Milk",
-    subtitle: "",
-    categoryId: "dairy",
-    regularPrice: 2,
-    discountedPrice: 1,
-    discountPercent: 50,
-    validFrom: null,
-    validUntil: "2026-09-22T00:00:00.000Z",
-    daysLeft: 4,
-    ringPercent: 50,
-    imageUrl: null,
-    storeId: "lidl",
-    storeLabel: "Lidl",
-    storeDotColor: "#2563eb",
-    ...overrides,
-  };
-}
+import { makeDisplayOffer } from "@/lib/test-utils/fixtures";
 
 describe("groupCartItemsByStore", () => {
   it("returns an empty summary for an empty cart", () => {
@@ -30,33 +9,28 @@ describe("groupCartItemsByStore", () => {
 
   it("groups a single store's items and computes subtotal/savings", () => {
     const items = [
-      makeItem({ id: "o1", regularPrice: 2, discountedPrice: 1 }),
-      makeItem({ id: "o2", regularPrice: 5, discountedPrice: 4 }),
+      makeDisplayOffer({ id: "o1", basePrice: 2, discountedPrice: 1 }),
+      makeDisplayOffer({ id: "o2", basePrice: 5, discountedPrice: 4 }),
     ];
     const summary = groupCartItemsByStore(items);
     expect(summary.groups).toEqual([
-      {
-        storeId: "lidl",
-        storeLabel: "Lidl",
-        items,
-        subtotal: 5,
-        savings: 2,
-      },
+      { storeId: "lidl", storeLabel: "Lidl", items, subtotal: 5, savings: 2 },
     ]);
     expect(summary.grandTotal).toBe(5);
     expect(summary.grandSavings).toBe(2);
   });
 
+  it("uses the loyalty price as the paid price when present", () => {
+    const items = [makeDisplayOffer({ basePrice: 10, discountedPrice: 8, loyaltyPrice: 6 })];
+    const summary = groupCartItemsByStore(items);
+    expect(summary.grandTotal).toBe(6);
+    expect(summary.grandSavings).toBe(4);
+  });
+
   it("groups items from multiple stores in first-seen order", () => {
-    const lidlItem = makeItem({ id: "o1", storeId: "lidl", storeLabel: "Lidl", regularPrice: 2, discountedPrice: 1 });
-    const kauflandItem = makeItem({
-      id: "o2",
-      storeId: "kaufland",
-      storeLabel: "Kaufland",
-      regularPrice: 10,
-      discountedPrice: 8,
-    });
-    const lidlItem2 = makeItem({ id: "o3", storeId: "lidl", storeLabel: "Lidl", regularPrice: 3, discountedPrice: 3 });
+    const lidlItem = makeDisplayOffer({ id: "o1", shop: "lidl", basePrice: 2, discountedPrice: 1 });
+    const kauflandItem = makeDisplayOffer({ id: "o2", shop: "kaufland", basePrice: 10, discountedPrice: 8 });
+    const lidlItem2 = makeDisplayOffer({ id: "o3", shop: "lidl", basePrice: 3, discountedPrice: 3 });
 
     const summary = groupCartItemsByStore([lidlItem, kauflandItem, lidlItem2]);
 

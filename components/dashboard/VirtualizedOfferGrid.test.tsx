@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { VirtualizedOfferGrid } from "./VirtualizedOfferGrid";
-import type { Offer } from "@/lib/types";
+import { makeDisplayOffer } from "@/lib/test-utils/fixtures";
 import { setDesktop } from "@/lib/test-utils/matchMedia";
 
 function setPhone(matches: boolean) {
@@ -17,21 +17,10 @@ function setPhone(matches: boolean) {
   })) as unknown as typeof window.matchMedia;
 }
 
-function offer(id: string): Offer {
-  return {
-    id,
-    title: `Offer ${id}`,
-    subtitle: "",
-    categoryId: "cat-1",
-    regularPrice: 2,
-    discountedPrice: 1,
-    discountPercent: 50,
-    validFrom: null,
-    validUntil: "2026-09-22T00:00:00.000Z",
-    daysLeft: 4,
-    ringPercent: 50,
-    imageUrl: null,
-  };
+function offers(count: number) {
+  return Array.from({ length: count }, (_, i) =>
+    makeDisplayOffer({ id: String(i), displayTitle: `Offer ${i}` }),
+  );
 }
 
 afterEach(() => setDesktop(true));
@@ -39,15 +28,7 @@ afterEach(() => setDesktop(true));
 describe("VirtualizedOfferGrid", () => {
   it("renders 2 columns per row on phone widths", () => {
     setPhone(true);
-    const offers = Array.from({ length: 6 }, (_, i) => offer(String(i)));
-
-    render(
-      <VirtualizedOfferGrid
-        offers={offers}
-        getKey={(o) => o.id}
-        getStoreProps={() => ({ storeId: "lidl", storeLabel: "Lidl", storeDotColor: "#2563eb" })}
-      />,
-    );
+    render(<VirtualizedOfferGrid offers={offers(6)} />);
 
     expect(document.querySelector(".grid-cols-2")).toBeInTheDocument();
     expect(document.querySelector(".grid-cols-3")).not.toBeInTheDocument();
@@ -55,33 +36,18 @@ describe("VirtualizedOfferGrid", () => {
 
   it("renders 3 columns per row above phone widths", () => {
     setPhone(false);
-    const offers = Array.from({ length: 6 }, (_, i) => offer(String(i)));
-
-    render(
-      <VirtualizedOfferGrid
-        offers={offers}
-        getKey={(o) => o.id}
-        getStoreProps={() => ({ storeId: "lidl", storeLabel: "Lidl", storeDotColor: "#2563eb" })}
-      />,
-    );
+    render(<VirtualizedOfferGrid offers={offers(6)} />);
 
     expect(document.querySelector(".grid-cols-3")).toBeInTheDocument();
     expect(document.querySelector(".grid-cols-2")).not.toBeInTheDocument();
   });
 
   it("only mounts a windowed subset of cards for a large offer list", () => {
-    const offers = Array.from({ length: 200 }, (_, i) => offer(String(i)));
-
-    render(
-      <VirtualizedOfferGrid
-        offers={offers}
-        getKey={(o) => o.id}
-        getStoreProps={() => ({ storeId: "lidl", storeLabel: "Lidl", storeDotColor: "#2563eb" })}
-      />,
-    );
+    const list = offers(200);
+    render(<VirtualizedOfferGrid offers={list} />);
 
     const mountedButtons = screen.getAllByRole("button", { name: /add to cart/i });
     expect(mountedButtons.length).toBeGreaterThan(0);
-    expect(mountedButtons.length).toBeLessThan(offers.length);
+    expect(mountedButtons.length).toBeLessThan(list.length);
   });
 });

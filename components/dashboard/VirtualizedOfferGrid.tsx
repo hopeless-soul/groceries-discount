@@ -4,33 +4,21 @@ import { useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { OfferCard } from "@/components/dashboard/OfferCard";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import type { Offer } from "@/lib/types";
+import type { DisplayOffer } from "@/lib/types";
 
-interface StoreProps {
-  storeId: string;
-  storeLabel: string;
-  storeDotColor: string;
-}
-
-interface VirtualizedOfferGridProps<T extends Offer> {
-  offers: T[];
-  getKey: (offer: T) => string;
-  getStoreProps: (offer: T) => StoreProps;
+interface VirtualizedOfferGridProps {
+  offers: DisplayOffer[];
 }
 
 const PHONE_QUERY = "(max-width: 767px)";
 const ESTIMATED_ROW_HEIGHT = 280;
 
-export function VirtualizedOfferGrid<T extends Offer>({
-  offers,
-  getKey,
-  getStoreProps,
-}: VirtualizedOfferGridProps<T>) {
+export function VirtualizedOfferGrid({ offers }: VirtualizedOfferGridProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const isPhone = useMediaQuery(PHONE_QUERY);
   const COLUMNS = isPhone ? 2 : 3;
 
-  const rows: T[][] = [];
+  const rows: DisplayOffer[][] = [];
   for (let i = 0; i < offers.length; i += COLUMNS) {
     rows.push(offers.slice(i, i + COLUMNS));
   }
@@ -67,18 +55,9 @@ export function VirtualizedOfferGrid<T extends Offer>({
               }}
               className={isPhone ? "grid grid-cols-2 gap-3 pb-3" : "grid grid-cols-3 gap-5 pb-5"}
             >
-              {row.map((offer) => {
-                const storeProps = getStoreProps(offer);
-                return (
-                  <OfferCard
-                    key={getKey(offer)}
-                    offer={offer}
-                    storeId={storeProps.storeId}
-                    storeLabel={storeProps.storeLabel}
-                    storeDotColor={storeProps.storeDotColor}
-                  />
-                );
-              })}
+              {row.map((offer) => (
+                <OfferCard key={`${offer.shop}-${offer.id}`} offer={offer} />
+              ))}
             </div>
           );
         })}

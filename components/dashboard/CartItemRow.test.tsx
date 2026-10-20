@@ -2,24 +2,16 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CartItemRow } from "./CartItemRow";
+import { makeDisplayOffer } from "@/lib/test-utils/fixtures";
+import { toLocalDateString } from "@/lib/validity";
 
-const item = {
-  id: "o1",
-  title: "Milk",
+// Valid until today, so the row is in the urgent (red) range.
+const item = makeDisplayOffer({
+  displayTitle: "Milk",
   subtitle: "1 l",
-  categoryId: "dairy",
-  regularPrice: 2,
-  discountedPrice: 1,
-  discountPercent: 50,
-  validFrom: null,
-  validUntil: "2026-09-22T00:00:00.000Z",
-  daysLeft: 1,
-  ringPercent: 95,
-  imageUrl: null,
-  storeId: "lidl",
-  storeLabel: "Lidl",
-  storeDotColor: "#2563eb",
-};
+  validTo: toLocalDateString(),
+  displayDiscount: 50,
+});
 
 describe("CartItemRow", () => {
   it("renders title, store, and price details", () => {

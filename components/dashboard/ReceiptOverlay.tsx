@@ -5,6 +5,8 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { DialogClose, DialogPortal } from "@/components/ui/dialog";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
+import { OfferImage } from "@/components/dashboard/OfferImage";
+import { referencePrice } from "@/lib/display";
 import { groupCartItemsByStore, type ReceiptStoreGroup } from "@/lib/receipt";
 
 function mulberry32(seed: number): () => number {
@@ -81,31 +83,20 @@ function StoreGroupBlock({ group }: { group: ReceiptStoreGroup }) {
     <div className="pt-3 pb-6">
       <p className="text-sm font-bold">{group.storeLabel.toUpperCase()}</p>
       {group.items.map((item) => {
-        const discountPct =
-          item.regularPrice > 0
-            ? Math.round((1 - item.discountedPrice / item.regularPrice) * 100)
-            : 0;
+        const discountPct = item.displayDiscount ?? 0;
+        const price = referencePrice(item);
         return (
           <div key={item.id} className="flex items-center justify-between gap-3 py-1 text-sm">
             <span className="flex min-w-0 items-center gap-2">
-              {item.imageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={item.imageUrl}
-                  alt=""
-                  className="h-6 w-6 flex-shrink-0 rounded-sm border border-[#18181b]/20 object-cover"
-                />
-              ) : (
-                <span className="h-6 w-6 flex-shrink-0 rounded-sm border border-dashed border-[#18181b]/20" />
-              )}
+              <OfferImage offer={item} className="h-6 w-6 flex-shrink-0 border border-[#18181b]/20" />
               <span className="">
-                {item.title}
+                {item.displayTitle}
                 {discountPct > 0 && (
                   <span className="ml-2 text-xs text-[#71717a]">-{discountPct}%</span>
                 )}
               </span>
             </span>
-            <span className="flex-shrink-0">{item.discountedPrice.toFixed(2)}</span>
+            <span className="flex-shrink-0">{price != null ? price.toFixed(2) : "—"}</span>
           </div>
         );
       })}

@@ -4,21 +4,9 @@ import userEvent from "@testing-library/user-event";
 import { OfferCard } from "./OfferCard";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
+import { makeDisplayOffer } from "@/lib/test-utils/fixtures";
 
-const offer = {
-  id: "o1",
-  title: "Milk",
-  subtitle: "1 l",
-  categoryId: "dairy",
-  regularPrice: 2,
-  discountedPrice: 1,
-  discountPercent: 50,
-  validFrom: null,
-  validUntil: "2026-09-22T00:00:00.000Z",
-  daysLeft: 4,
-  ringPercent: 50,
-  imageUrl: null,
-};
+const offer = makeDisplayOffer({ displayTitle: "Milk", subtitle: "1 l" });
 
 beforeEach(() => {
   localStorage.clear();
@@ -28,24 +16,24 @@ beforeEach(() => {
 
 describe("OfferCard", () => {
   it("shows price, discount pill, and an outline Add to cart button when not in cart", () => {
-    render(<OfferCard offer={offer} storeId="lidl" storeLabel="Lidl" storeDotColor="#2563eb" />);
+    render(<OfferCard offer={offer} />);
     expect(screen.getByText("-50%")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /add to cart/i })).toBeInTheDocument();
   });
 
   it("adds the offer to the cart on click and flips to In cart", async () => {
     const user = userEvent.setup();
-    render(<OfferCard offer={offer} storeId="lidl" storeLabel="Lidl" storeDotColor="#2563eb" />);
+    render(<OfferCard offer={offer} />);
     await user.click(screen.getByRole("button", { name: /add to cart/i }));
 
     expect(useCartStore.getState().items).toHaveLength(1);
-    expect(useCartStore.getState().items[0]).toMatchObject({ id: "o1", storeId: "lidl" });
+    expect(useCartStore.getState().items[0]).toMatchObject({ id: "o1", shop: "lidl" });
     expect(screen.getByRole("button", { name: /in cart/i })).toBeInTheDocument();
   });
 
   it("removes the offer from the cart when clicked again", async () => {
     const user = userEvent.setup();
-    render(<OfferCard offer={offer} storeId="lidl" storeLabel="Lidl" storeDotColor="#2563eb" />);
+    render(<OfferCard offer={offer} />);
     await user.click(screen.getByRole("button", { name: /add to cart/i }));
     await user.click(screen.getByRole("button", { name: /in cart/i }));
 
@@ -53,29 +41,21 @@ describe("OfferCard", () => {
     expect(screen.getByRole("button", { name: /add to cart/i })).toBeInTheDocument();
   });
 
-  it("renders the offer image when showImages is on and imageUrl is present", () => {
+  it("renders the full image when showImages is on and the offer is not cropped", () => {
     useDashboardUiStore.setState({ showImages: true });
-    render(
-      <OfferCard
-        offer={{ ...offer, imageUrl: "https://kaufland.media.schwarz/is/image/schwarz/00138945_P" }}
-        storeId="lidl"
-        storeLabel="Lidl"
-        storeDotColor="#2563eb"
-      />,
-    );
+    render(<OfferCard offer={{ ...offer, isCropped: false }} />);
+    expect(screen.getByRole("img", { name: "Milk" })).toBeInTheDocument();
+  });
+
+  it("renders the cropped region when showImages is on and the offer is cropped", () => {
+    useDashboardUiStore.setState({ showImages: true });
+    render(<OfferCard offer={{ ...offer, isCropped: true, boundaryBox: [[0.1, 0.2], [0.4, 0.5]] }} />);
     expect(screen.getByRole("img", { name: "Milk" })).toBeInTheDocument();
   });
 
   it("hides the offer image when showImages is off, even if imageUrl is present", () => {
     useDashboardUiStore.setState({ showImages: false });
-    render(
-      <OfferCard
-        offer={{ ...offer, imageUrl: "https://kaufland.media.schwarz/is/image/schwarz/00138945_P" }}
-        storeId="lidl"
-        storeLabel="Lidl"
-        storeDotColor="#2563eb"
-      />,
-    );
+    render(<OfferCard offer={{ ...offer, isCropped: false }} />);
     expect(screen.queryByRole("img", { name: "Milk" })).not.toBeInTheDocument();
   });
 });

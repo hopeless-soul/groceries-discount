@@ -6,15 +6,18 @@ import { StoreList } from "@/components/dashboard/StoreList";
 import { CategoryList } from "@/components/dashboard/CategoryList";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsDesktop } from "@/hooks/useIsDesktop";
+import type { ShopKey } from "@/lib/config/shops";
+import type { ShopStatus } from "@/lib/shops";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import type { Category } from "@/lib/types";
 
 interface DashboardSidebarProps {
   categories: Category[];
   totalCount: number;
+  statuses: Record<ShopKey, ShopStatus> | null;
 }
 
-export function DashboardSidebar({ categories, totalCount }: DashboardSidebarProps) {
+export function DashboardSidebar({ categories, totalCount, statuses }: DashboardSidebarProps) {
   const isDesktop = useIsDesktop();
   const sidebarOpen = useDashboardUiStore((s) => s.sidebarOpen);
   const toggleSidebarOpen = useDashboardUiStore((s) => s.toggleSidebarOpen);
@@ -30,7 +33,7 @@ export function DashboardSidebar({ categories, totalCount }: DashboardSidebarPro
   if (isDesktop) {
     return (
       <div className="w-60 overflow-y-auto border-r border-[#e4e4e7] bg-white">
-        <StoreList />
+        <StoreList statuses={statuses} />
         <CategoryList categories={categories} totalCount={totalCount} />
       </div>
     );
@@ -51,7 +54,7 @@ export function DashboardSidebar({ categories, totalCount }: DashboardSidebarPro
         <Menu className="h-5 w-5" />
       </DrawerTrigger>
       <DrawerContent side="left">
-        <StoreList />
+        <StoreList statuses={statuses} />
         <CategoryList categories={categories} totalCount={totalCount} />
       </DrawerContent>
     </Drawer>

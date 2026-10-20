@@ -20,6 +20,11 @@ export const useCartStore = create<CartState>()(
       clear: () => set({ items: [] }),
       has: (offerId) => get().items.some((i) => i.id === offerId),
     }),
-    { name: "groceries-discount:cart" },
+    {
+      name: "groceries-discount:cart",
+      version: 1,
+      // Items saved before the backend integration have the old Offer shape; drop them.
+      migrate: () => ({ items: [] }),
+    },
   ),
 );

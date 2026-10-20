@@ -2,73 +2,63 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-const replace = vi.fn();
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({ replace }),
+const useShops = vi.fn();
+vi.mock("@/hooks/useShops", () => ({
+  useShops: () => useShops(),
 }));
 
-const useDashboardData = vi.fn();
-vi.mock("@/hooks/useDashboardData", () => ({
-  useDashboardData: (...args: unknown[]) => useDashboardData(...args),
+const useShopOffers = vi.fn();
+const useAllShopOffers = vi.fn();
+vi.mock("@/hooks/useShopOffers", () => ({
+  useShopOffers: (...args: unknown[]) => useShopOffers(...args),
+  useAllShopOffers: (...args: unknown[]) => useAllShopOffers(...args),
 }));
 
-const useAllStoresOffers = vi.fn();
-vi.mock("@/hooks/useAllStoresOffers", () => ({
-  useAllStoresOffers: (...args: unknown[]) => useAllStoresOffers(...args),
-}));
+vi.mock("@/public/bascet_logo.svg", () => ({ default: () => null }));
 
-import { useLocationStore } from "@/lib/stores/location-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
-import { StoreName } from "@/providers/types";
 import DashboardPage from "./page";
 
+const breadOffer = {
+  id: "o1",
+  pageId: "p1",
+  flyerId: "f1",
+  shop: "lidl" as const,
+  title: "Bread",
+  category: ["bakery" as const],
+  basePrice: 2,
+  discountedPrice: 1,
+  loyaltyPrice: null,
+  loyaltyDiscount: null,
+  discount: 50,
+  validFrom: "2026-09-20",
+  validTo: "2099-12-31",
+  imageUrl: "https://api.example.com/i",
+  isCropped: false,
+  boundaryBox: [[0, 0], [1, 1]] as [[number, number], [number, number]],
+};
+
 beforeEach(() => {
-  replace.mockClear();
   localStorage.clear();
-  useLocationStore.setState({ country: "SK", city: "Bratislava" });
   useDashboardUiStore.setState({
-    selectedStore: StoreName.Lidl,
+    selectedStore: "lidl",
     activeCategory: "All",
     cartOpen: true,
     searchQuery: "",
     showImages: false,
   });
-  useDashboardData.mockReturnValue({
-    data: {
-      store: { id: "lidl", label: "Lidl", dotColor: "#2563eb" },
-      categories: [{ id: "bakery", name: "Bakery", count: 1 }],
-      offers: [
-        {
-          id: "o1",
-          title: "Bread",
-          subtitle: "",
-          categoryId: "bakery",
-          regularPrice: 2,
-          discountedPrice: 1,
-          discountPercent: 50,
-          validFrom: null,
-          validUntil: "2026-09-22T00:00:00.000Z",
-          daysLeft: 4,
-          ringPercent: 50,
-          imageUrl: null,
-        },
-      ],
-    },
+  useShops.mockReturnValue({
+    shops: [{ shop: "lidl", name: "Lidl", flyer: { id: "f1", validFrom: "2026-09-20", validTo: "2099-12-31" } }],
+    statuses: { lidl: "available", kaufland: "restricted", billa: "restricted", tesco: "restricted" },
     loading: false,
     error: null,
     refetch: vi.fn(),
   });
-  useAllStoresOffers.mockReset();
-  useAllStoresOffers.mockReturnValue({ offers: [], loading: false, error: null });
+  useShopOffers.mockReturnValue({ offers: [breadOffer], loading: false, error: null, refetch: vi.fn() });
+  useAllShopOffers.mockReturnValue({ offers: [], loading: false, error: null });
 });
 
 describe("Dashboard page", () => {
-  it("redirects to / when no location is saved", () => {
-    useLocationStore.setState({ country: null, city: null });
-    render(<DashboardPage />);
-    expect(replace).toHaveBeenCalledWith("/");
-  });
-
   it("renders stores, categories, offers, and the cart panel", () => {
     render(<DashboardPage />);
     expect(screen.getByRole("button", { name: /lidl/i })).toBeInTheDocument();
@@ -77,16 +67,21 @@ describe("Dashboard page", () => {
     expect(screen.getByText("Cart · 0")).toBeInTheDocument();
   });
 
+  it("fetches offers only for the selected shop when it is available", () => {
+    render(<DashboardPage />);
+    expect(useShopOffers).toHaveBeenLastCalledWith("lidl", true);
+  });
+
+  it("does not fetch offers for a restricted selected shop", () => {
+    useDashboardUiStore.setState({ selectedStore: "kaufland" });
+    render(<DashboardPage />);
+    expect(useShopOffers).toHaveBeenLastCalledWith("kaufland", false);
+  });
+
   it("hides the cart panel when cartOpen is false", () => {
     useDashboardUiStore.setState({ cartOpen: false });
     render(<DashboardPage />);
     expect(screen.queryByText(/cart ·/i)).not.toBeInTheDocument();
-  });
-
-  it("calls useDashboardData exactly once per render, so OfferGrid and CategoryList share a single fetch", () => {
-    useDashboardData.mockClear();
-    render(<DashboardPage />);
-    expect(useDashboardData).toHaveBeenCalledTimes(1);
   });
 
   it("typing into the search box updates the store and shows a clear button", async () => {

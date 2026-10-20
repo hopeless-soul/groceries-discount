@@ -3,7 +3,6 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CategoryList } from "./CategoryList";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
-import { StoreName } from "@/providers/types";
 
 const categories = [
   { id: "bakery", name: "Bakery", count: 3 },
@@ -11,7 +10,7 @@ const categories = [
 ];
 
 beforeEach(() => {
-  useDashboardUiStore.setState({ selectedStore: StoreName.Lidl, activeCategory: "All", cartOpen: true });
+  useDashboardUiStore.setState({ selectedStore: "lidl", activeCategory: "All", cartOpen: true });
 });
 
 describe("CategoryList", () => {

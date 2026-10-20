@@ -4,31 +4,15 @@ import userEvent from "@testing-library/user-event";
 import { CartPanel } from "./CartPanel";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
-import { StoreName } from "@/providers/types";
 import { setDesktop } from "@/lib/test-utils/matchMedia";
+import { makeDisplayOffer } from "@/lib/test-utils/fixtures";
 
-const item = {
-  id: "o1",
-  title: "Milk",
-  subtitle: "",
-  categoryId: "dairy",
-  regularPrice: 2,
-  discountedPrice: 1,
-  discountPercent: 50,
-  validFrom: null,
-  validUntil: "2026-09-22T00:00:00.000Z",
-  daysLeft: 4,
-  ringPercent: 50,
-  imageUrl: null,
-  storeId: "lidl",
-  storeLabel: "Lidl",
-  storeDotColor: "#2563eb",
-};
+const item = makeDisplayOffer({ displayTitle: "Milk" });
 
 beforeEach(() => {
   localStorage.clear();
   useCartStore.setState({ items: [] });
-  useDashboardUiStore.setState({ selectedStore: StoreName.Lidl, activeCategory: "All", cartOpen: true });
+  useDashboardUiStore.setState({ selectedStore: "lidl", activeCategory: "All", cartOpen: true });
 });
 
 afterEach(() => setDesktop(true));

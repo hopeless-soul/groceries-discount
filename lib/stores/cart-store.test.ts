@@ -1,24 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useCartStore } from "./cart-store";
 import type { CartItem } from "@/lib/types";
+import { makeDisplayOffer } from "@/lib/test-utils/fixtures";
 
-const item = (id: string): CartItem => ({
-  id,
-  title: `Offer ${id}`,
-  subtitle: "",
-  categoryId: "cat-1",
-  regularPrice: 2,
-  discountedPrice: 1,
-  discountPercent: 50,
-  validFrom: null,
-  validUntil: "2026-09-22T00:00:00.000Z",
-  daysLeft: 4,
-  ringPercent: 50,
-  imageUrl: null,
-  storeId: "lidl",
-  storeLabel: "Lidl",
-  storeDotColor: "#2563eb",
-});
+const item = (id: string): CartItem => makeDisplayOffer({ id, displayTitle: `Offer ${id}` });
 
 beforeEach(() => {
   localStorage.clear();

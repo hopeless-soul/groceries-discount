@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { StoreName } from "@/providers/types";
+import type { ShopKey } from "@/lib/config/shops";
 
 export type SortOption = "default" | "discountPercent" | "discountAmount";
 
 interface DashboardUiState {
-  selectedStore: StoreName;
+  selectedStore: ShopKey;
   activeCategory: string;
   cartOpen: boolean;
   sidebarOpen: boolean;
@@ -13,7 +13,7 @@ interface DashboardUiState {
   searchQuery: string;
   showImages: boolean;
   sortBy: SortOption;
-  setSelectedStore: (store: StoreName) => void;
+  setSelectedStore: (store: ShopKey) => void;
   setActiveCategory: (category: string) => void;
   toggleCartOpen: () => void;
   toggleSidebarOpen: () => void;
@@ -26,7 +26,7 @@ interface DashboardUiState {
 export const useDashboardUiStore = create<DashboardUiState>()(
   persist(
     (set) => ({
-      selectedStore: StoreName.Lidl,
+      selectedStore: "lidl",
       activeCategory: "All",
       cartOpen: true,
       sidebarOpen: false,

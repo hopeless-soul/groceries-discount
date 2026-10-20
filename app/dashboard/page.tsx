@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
@@ -11,16 +9,17 @@ import { ReceiptButton } from "@/components/dashboard/ReceiptButton";
 import { ReceiptOverlay } from "@/components/dashboard/ReceiptOverlay";
 import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 import { Input } from "@/components/ui/input";
-import { useDashboardData } from "@/hooks/useDashboardData";
+import { isOfferAvailable } from "@/lib/availability";
 import { useHasHydrated } from "@/hooks/useHasHydrated";
-import { useLocationStore } from "@/lib/stores/location-store";
+import { useShopOffers } from "@/hooks/useShopOffers";
+import { useShops } from "@/hooks/useShops";
+import { categoryDescriptions } from "@/lib/config/categories";
+import { shopConfigs } from "@/lib/config/shops";
+import { countByCategory, toDisplayOffer } from "@/lib/display";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 
 export default function DashboardPage() {
-  const router = useRouter();
   const hasHydrated = useHasHydrated();
-  const country = useLocationStore((s) => s.country);
-  const city = useLocationStore((s) => s.city);
   const selectedStore = useDashboardUiStore((s) => s.selectedStore);
   const searchQuery = useDashboardUiStore((s) => s.searchQuery);
   const setSearchQuery = useDashboardUiStore((s) => s.setSearchQuery);
@@ -28,26 +27,32 @@ export default function DashboardPage() {
   const toggleShowImages = useDashboardUiStore((s) => s.toggleShowImages);
   const sortBy = useDashboardUiStore((s) => s.sortBy);
   const setSortBy = useDashboardUiStore((s) => s.setSortBy);
-  const { data, loading, error, refetch } = useDashboardData(selectedStore);
 
-  useEffect(() => {
-    if (hasHydrated && (!country || !city)) {
-      router.replace("/");
-    }
-  }, [hasHydrated, country, city, router]);
+  const shops = useShops();
+  const selectedAvailable = shops.statuses?.[selectedStore] === "available";
+  const shopOffers = useShopOffers(selectedStore, selectedAvailable);
 
-  if (!hasHydrated || !country || !city) {
+  if (!hasHydrated) {
     return null;
   }
 
-  const categories = data?.categories ?? [];
-  const totalCount = data?.offers.length ?? 0;
+  const displayOffers = (shopOffers.offers ?? [])
+    .map((offer) => toDisplayOffer(offer))
+    .filter((offer) => isOfferAvailable(offer));
+  const counts = countByCategory(displayOffers);
+  const categories = shopConfigs[selectedStore].categories
+    .filter((key) => counts.has(key))
+    .map((key) => ({ id: key, name: categoryDescriptions[key], count: counts.get(key)! }));
 
   return (
     <div className="flex h-full flex-col">
       <AppHeader />
       <div className="flex flex-1 overflow-hidden">
-        <DashboardSidebar categories={categories} totalCount={totalCount} />
+        <DashboardSidebar
+          categories={categories}
+          totalCount={displayOffers.length}
+          statuses={shops.statuses}
+        />
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex gap-2 justify-between h-[60px] flex-shrink-0 items-center border-b border-[#e4e4e7] bg-white px-6">
             <div className="relative max-w-sm w-full">
@@ -76,7 +81,17 @@ export default function DashboardPage() {
               setSortBy={setSortBy}
             />
           </div>
-          <OfferGrid data={data} loading={loading} error={error} refetch={refetch} />
+          <OfferGrid
+            selectedStore={selectedStore}
+            statuses={shops.statuses}
+            shopsLoading={shops.loading}
+            shopsError={shops.error}
+            refetchShops={shops.refetch}
+            offers={displayOffers}
+            loading={shopOffers.loading}
+            error={shopOffers.error}
+            refetch={shopOffers.refetch}
+          />
         </div>
         <CartPanel />
       </div>

@@ -18,6 +18,12 @@ export function computeRingPercent(
   return Math.min(100, Math.max(0, Math.round((elapsed / total) * 100)));
 }
 
+/** Local calendar date as YYYY-MM-DD, the format the API uses for validity dates. */
+export function toLocalDateString(date: Date = new Date()): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 export function getUrgencyColor(daysLeft: number): string {
   if (daysLeft <= 1) return "#dc2626";
   if (daysLeft <= 3) return "#d97706";

@@ -1,3 +1,5 @@
+import { shopConfigs } from "@/lib/config/shops";
+import { referencePrice } from "@/lib/display";
 import type { CartItem } from "@/lib/types";
 
 export interface ReceiptStoreGroup {
@@ -19,20 +21,20 @@ export function groupCartItemsByStore(items: CartItem[]): ReceiptSummary {
   const byStore = new Map<string, CartItem[]>();
 
   for (const item of items) {
-    if (!byStore.has(item.storeId)) {
-      byStore.set(item.storeId, []);
-      order.push(item.storeId);
+    if (!byStore.has(item.shop)) {
+      byStore.set(item.shop, []);
+      order.push(item.shop);
     }
-    byStore.get(item.storeId)!.push(item);
+    byStore.get(item.shop)!.push(item);
   }
 
   const groups: ReceiptStoreGroup[] = order.map((storeId) => {
     const storeItems = byStore.get(storeId)!;
-    const subtotal = storeItems.reduce((sum, i) => sum + i.discountedPrice, 0);
-    const regularSubtotal = storeItems.reduce((sum, i) => sum + i.regularPrice, 0);
+    const subtotal = storeItems.reduce((sum, i) => sum + (referencePrice(i) ?? 0), 0);
+    const regularSubtotal = storeItems.reduce((sum, i) => sum + (i.basePrice ?? 0), 0);
     return {
       storeId,
-      storeLabel: storeItems[0].storeLabel,
+      storeLabel: shopConfigs[storeId as keyof typeof shopConfigs].name,
       items: storeItems,
       subtotal,
       savings: regularSubtotal - subtotal,

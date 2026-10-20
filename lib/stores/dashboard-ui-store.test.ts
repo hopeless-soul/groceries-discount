@@ -1,11 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useDashboardUiStore } from "./dashboard-ui-store";
-import { StoreName } from "@/providers/types";
 
 beforeEach(() => {
   localStorage.clear();
   useDashboardUiStore.setState({
-    selectedStore: StoreName.Lidl,
+    selectedStore: "lidl",
     activeCategory: "All",
     cartOpen: true,
     searchQuery: "",
@@ -17,7 +16,7 @@ beforeEach(() => {
 describe("useDashboardUiStore", () => {
   it("defaults to Lidl / All / cartOpen=true / searchQuery='' / showImages=false", () => {
     expect(useDashboardUiStore.getState()).toMatchObject({
-      selectedStore: StoreName.Lidl,
+      selectedStore: "lidl",
       activeCategory: "All",
       cartOpen: true,
       searchQuery: "",
@@ -52,9 +51,9 @@ describe("useDashboardUiStore", () => {
 
   it("setSelectedStore resets activeCategory to All", () => {
     useDashboardUiStore.getState().setActiveCategory("Bakery");
-    useDashboardUiStore.getState().setSelectedStore(StoreName.Kaufland);
+    useDashboardUiStore.getState().setSelectedStore("kaufland");
     expect(useDashboardUiStore.getState()).toMatchObject({
-      selectedStore: StoreName.Kaufland,
+      selectedStore: "kaufland",
       activeCategory: "All",
     });
   });

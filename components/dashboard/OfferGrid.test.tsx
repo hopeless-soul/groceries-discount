@@ -3,120 +3,114 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { OfferGrid } from "./OfferGrid";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
-import { useLocationStore } from "@/lib/stores/location-store";
+import { makeDisplayOffer } from "@/lib/test-utils/fixtures";
+import type { ShopStatus } from "@/lib/shops";
+import type { ShopKey } from "@/lib/config/shops";
 
-const useAllStoresOffers = vi.fn();
-vi.mock("@/hooks/useAllStoresOffers", () => ({
-  useAllStoresOffers: (...args: unknown[]) => useAllStoresOffers(...args),
+const useAllShopOffers = vi.fn();
+vi.mock("@/hooks/useShopOffers", () => ({
+  useAllShopOffers: (...args: unknown[]) => useAllShopOffers(...args),
 }));
 
-const offer = (id: string, categoryId: string) => ({
-  id,
-  title: `Offer ${id}`,
-  subtitle: "",
-  categoryId,
-  regularPrice: 2,
-  discountedPrice: 1,
-  discountPercent: 50,
-  validFrom: null,
-  validUntil: "2026-09-22T00:00:00.000Z",
-  daysLeft: 4,
-  ringPercent: 50,
-  imageUrl: null,
-});
+const available: Record<ShopKey, ShopStatus> = {
+  lidl: "available",
+  kaufland: "available",
+  billa: "available",
+  tesco: "available",
+};
+
+function renderGrid(overrides: Partial<Parameters<typeof OfferGrid>[0]> = {}) {
+  const props = {
+    selectedStore: "lidl" as ShopKey,
+    statuses: available,
+    shopsLoading: false,
+    shopsError: null,
+    refetchShops: vi.fn(),
+    offers: [] as ReturnType<typeof makeDisplayOffer>[],
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+    ...overrides,
+  };
+  render(<OfferGrid {...props} />);
+  return props;
+}
 
 beforeEach(() => {
-  useDashboardUiStore.setState({ activeCategory: "All", cartOpen: true, searchQuery: "" });
-  useLocationStore.setState({ country: "SK", city: "Bratislava" });
-  useAllStoresOffers.mockReset();
-  useAllStoresOffers.mockReturnValue({ offers: [], loading: false, error: null });
+  useDashboardUiStore.setState({ activeCategory: "All", cartOpen: true, searchQuery: "", sortBy: "default" });
+  useAllShopOffers.mockReset();
+  useAllShopOffers.mockReturnValue({ offers: [], loading: false, error: null });
 });
 
 describe("OfferGrid", () => {
   it("shows a loading state", () => {
-    render(<OfferGrid data={null} loading={true} error={null} refetch={vi.fn()} />);
+    renderGrid({ loading: true });
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
   it("shows an error state with a retry button", async () => {
-    const refetch = vi.fn();
     const user = userEvent.setup();
-    render(<OfferGrid data={null} loading={false} error={new Error("boom")} refetch={refetch} />);
+    const refetch = vi.fn();
+    renderGrid({ error: new Error("boom"), refetch });
     expect(screen.getByText(/couldn't load offers/i)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /retry/i }));
     expect(refetch).toHaveBeenCalled();
   });
 
+  it("shows a shops error with a retry that refetches shops", async () => {
+    const user = userEvent.setup();
+    const refetchShops = vi.fn();
+    renderGrid({ shopsError: new Error("down"), refetchShops, statuses: null });
+    expect(screen.getByText(/couldn't load shops/i)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /retry/i }));
+    expect(refetchShops).toHaveBeenCalled();
+  });
+
+  it("shows the shop's status message instead of offers when it is restricted", () => {
+    renderGrid({ statuses: { ...available, lidl: "restricted" } });
+    expect(screen.getByText("Shop is restricted.")).toBeInTheDocument();
+  });
+
   it("shows an empty state when there are no offers", () => {
-    render(
-      <OfferGrid
-        data={{ store: { id: "lidl", label: "Lidl", dotColor: "#2563eb" }, categories: [], offers: [] }}
-        loading={false}
-        error={null}
-        refetch={vi.fn()}
-      />,
-    );
+    renderGrid();
     expect(screen.getByText(/no offers/i)).toBeInTheDocument();
   });
 
-  it("filters offers by the active category", () => {
-    useDashboardUiStore.setState({ activeCategory: "bakery" });
-    render(
-      <OfferGrid
-        data={{
-          store: { id: "lidl", label: "Lidl", dotColor: "#2563eb" },
-          categories: [{ id: "bakery", name: "Bakery", count: 1 }, { id: "dairy", name: "Dairy", count: 1 }],
-          offers: [offer("o1", "bakery"), offer("o2", "dairy")],
-        }}
-        loading={false}
-        error={null}
-        refetch={vi.fn()}
-      />,
-    );
-    expect(screen.getByText("Offer o1")).toBeInTheDocument();
-    expect(screen.queryByText("Offer o2")).not.toBeInTheDocument();
+  it("renders the offers of the selected shop", () => {
+    renderGrid({ offers: [makeDisplayOffer({ id: "o1", displayTitle: "Bread" })] });
+    expect(screen.getByText("Bread")).toBeInTheDocument();
   });
 
-  it("shows a loading state while searching all stores", () => {
+  it("searches all available shops and shows notices for unavailable ones", () => {
     useDashboardUiStore.setState({ searchQuery: "bread" });
-    useAllStoresOffers.mockReturnValue({ offers: [], loading: true, error: null });
-    render(<OfferGrid data={null} loading={false} error={null} refetch={vi.fn()} />);
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
-  });
-
-  it("shows an error state while searching all stores", () => {
-    useDashboardUiStore.setState({ searchQuery: "bread" });
-    useAllStoresOffers.mockReturnValue({ offers: [], loading: false, error: new Error("boom") });
-    render(<OfferGrid data={null} loading={false} error={null} refetch={vi.fn()} />);
-    expect(screen.getByText(/couldn't load offers/i)).toBeInTheDocument();
-  });
-
-  it("ignores the active category and searches by title/subtitle across all stores", () => {
-    useDashboardUiStore.setState({ searchQuery: "sourdough", activeCategory: "dairy" });
-    useAllStoresOffers.mockReturnValue({
+    useAllShopOffers.mockReturnValue({
       offers: [
-        { ...offer("o1", "bakery"), title: "Sourdough loaf", storeId: "lidl", storeLabel: "Lidl", storeDotColor: "#2563eb" },
-        { ...offer("o2", "dairy"), title: "Milk", subtitle: "sourdough starter kit", storeId: "billa", storeLabel: "Billa", storeDotColor: "#dc2626" },
-        { ...offer("o3", "bakery"), title: "Rye bread", storeId: "tesco", storeLabel: "Tesco", storeDotColor: "#059669" },
+        {
+          id: "k1",
+          pageId: "p",
+          flyerId: "f",
+          shop: "kaufland",
+          title: "Bread",
+          category: ["bakery"],
+          basePrice: 2,
+          discountedPrice: 1,
+          loyaltyPrice: null,
+          loyaltyDiscount: null,
+          discount: 50,
+          validFrom: "2026-09-20",
+          validTo: "2026-09-30",
+          imageUrl: "https://api.example.com/i",
+          isCropped: false,
+          boundaryBox: [[0, 0], [1, 1]],
+        },
       ],
       loading: false,
       error: null,
     });
-    render(<OfferGrid data={null} loading={false} error={null} refetch={vi.fn()} />);
+    renderGrid({ statuses: { ...available, billa: "outdated" } });
 
-    expect(screen.getByText("Sourdough loaf")).toBeInTheDocument();
-    expect(screen.getByText("Milk")).toBeInTheDocument();
-    expect(screen.queryByText("Rye bread")).not.toBeInTheDocument();
-  });
-
-  it("shows a no-match message when the search query matches nothing", () => {
-    useDashboardUiStore.setState({ searchQuery: "nonexistent" });
-    useAllStoresOffers.mockReturnValue({
-      offers: [{ ...offer("o1", "bakery"), storeId: "lidl", storeLabel: "Lidl", storeDotColor: "#2563eb" }],
-      loading: false,
-      error: null,
-    });
-    render(<OfferGrid data={null} loading={false} error={null} refetch={vi.fn()} />);
-    expect(screen.getByText(/no offers match/i)).toBeInTheDocument();
+    expect(screen.getByText("Billa: Shop's flyer is outdated. Try again later.")).toBeInTheDocument();
+    expect(screen.getByText("Bread")).toBeInTheDocument();
+    expect(useAllShopOffers).toHaveBeenLastCalledWith(["lidl", "kaufland", "tesco"], true);
   });
 });
