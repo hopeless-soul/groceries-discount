@@ -93,22 +93,21 @@ export function OfferGrid({
     );
 
     return (
-      <div className="flex min-h-0 flex-1 flex-col p-6">
-        {unavailable.map((key) => (
-          <p key={key} className="mb-2 flex-shrink-0 text-sm text-[#71717a]">
-            {shopConfigs[key].name}: {shopStatusMessages[statuses![key] as Exclude<ShopStatus, "available">]}
-          </p>
-        ))}
-        {matches.length === 0 ? (
-          <p className="text-sm text-[#71717a]">No offers match &quot;{searchQuery}&quot;.</p>
-        ) : (
-          <>
-            <p className="mb-4 flex-shrink-0 text-sm text-[#71717a]">
-              {matches.length} offers match &quot;{searchQuery}&quot;
+      <div className="flex min-h-0 flex-1 flex-col">
+        {/* Padding lives here, not on the wrapper, so the grid keeps the same width as outside search. */}
+        <div className="flex-shrink-0 px-3 pt-3 md:pl-6 md:pt-6">
+          {unavailable.map((key) => (
+            <p key={key} className="mb-2 text-sm text-[#71717a]">
+              {shopConfigs[key].name}: {shopStatusMessages[statuses![key] as Exclude<ShopStatus, "available">]}
             </p>
-            <VirtualizedOfferGrid offers={matches} />
-          </>
-        )}
+          ))}
+          <p className="text-sm text-[#71717a]">
+            {matches.length === 0
+              ? <>No offers match &quot;{searchQuery}&quot;.</>
+              : <>{matches.length} offers match &quot;{searchQuery}&quot;</>}
+          </p>
+        </div>
+        {matches.length > 0 && <VirtualizedOfferGrid offers={matches} />}
       </div>
     );
   }
