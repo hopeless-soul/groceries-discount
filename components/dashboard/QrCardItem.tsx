@@ -54,15 +54,16 @@ export function QrCardItem({ card, mode, onModeChange, onEdit, onDelete }: QrCar
         </button>
       </div>
 
-      <div className="flex h-96 items-center justify-center overflow-hidden px-4">
+      <div className="flex h-[min(24rem,calc(100dvh-21rem))] items-center justify-center overflow-hidden px-4">
         {mode === "qr" ? (
-          // Scales down on short screens so the whole card stays inside the carousel viewport.
-          <div data-testid="qr-code" className="w-full max-w-[min(20rem,44dvh)]">
+          // Height and QR width share one bound (100dvh - 21rem), so the card fits the carousel on short screens.
+          <div data-testid="qr-code" className="w-full max-w-[min(20rem,calc(100dvh-21rem))]">
             <QRCodeSVG value={card.value} size={256} className="h-auto w-full" />
           </div>
         ) : (
-          <div data-testid="barcode" className="max-w-full px-6 py-6">
+          <div data-testid="barcode" className="max-w-full mx-6 py-6">
             <Barcode value={card.value} format="CODE128" width={1.5} height={110} displayValue={false} margin={0} />
+            <div className="mt-2 text-center font-mono text-xs text-[#71717a]">{card.value}</div>
           </div>
         )}
       </div>
