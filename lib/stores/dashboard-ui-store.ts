@@ -10,6 +10,7 @@ interface DashboardUiState {
   cartOpen: boolean;
   sidebarOpen: boolean;
   receiptOpen: boolean;
+  qrOpen: boolean;
   searchQuery: string;
   showImages: boolean;
   sortBy: SortOption;
@@ -18,6 +19,7 @@ interface DashboardUiState {
   toggleCartOpen: () => void;
   toggleSidebarOpen: () => void;
   toggleReceiptOpen: () => void;
+  toggleQrOpen: () => void;
   setSearchQuery: (query: string) => void;
   toggleShowImages: () => void;
   setSortBy: (sort: SortOption) => void;
@@ -31,6 +33,7 @@ export const useDashboardUiStore = create<DashboardUiState>()(
       cartOpen: true,
       sidebarOpen: false,
       receiptOpen: false,
+      qrOpen: false,
       searchQuery: "",
       showImages: true,
       sortBy: "default",
@@ -39,6 +42,7 @@ export const useDashboardUiStore = create<DashboardUiState>()(
       toggleCartOpen: () => set((state) => ({ cartOpen: !state.cartOpen })),
       toggleSidebarOpen: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
       toggleReceiptOpen: () => set((state) => ({ receiptOpen: !state.receiptOpen })),
+      toggleQrOpen: () => set((state) => ({ qrOpen: !state.qrOpen })),
       setSearchQuery: (query) => set({ searchQuery: query }),
       toggleShowImages: () => set((state) => ({ showImages: !state.showImages })),
       setSortBy: (sort) => set({ sortBy: sort }),

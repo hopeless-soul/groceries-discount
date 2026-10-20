@@ -10,6 +10,18 @@ if (typeof window !== "undefined" && !window.ResizeObserver) {
   window.ResizeObserver = ResizeObserverStub as unknown as typeof ResizeObserver;
 }
 
+if (typeof window !== "undefined" && !window.IntersectionObserver) {
+  class IntersectionObserverStub {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return [];
+    }
+  }
+  window.IntersectionObserver = IntersectionObserverStub as unknown as typeof IntersectionObserver;
+}
+
 // jsdom reports 0 for layout metrics, which makes @tanstack/react-virtual
 // compute a zero-height viewport and render no rows. Give elements a
 // plausible size so virtualized lists render a realistic window in tests.

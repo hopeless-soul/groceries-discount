@@ -8,6 +8,7 @@ import { CartPanel } from "@/components/dashboard/CartPanel";
 import { QrButton } from "@/components/dashboard/QrButton";
 import { ReceiptButton } from "@/components/dashboard/ReceiptButton";
 import { ReceiptOverlay } from "@/components/dashboard/ReceiptOverlay";
+import { QrListDialog } from "@/components/dashboard/QrListDialog";
 import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 import { Input } from "@/components/ui/input";
 import { isOfferAvailable } from "@/lib/availability";
@@ -109,6 +110,7 @@ export default function DashboardPage() {
         <QrButton />
       </div>
       <ReceiptOverlay />
+      <QrListDialog />
     </div>
   );
 }

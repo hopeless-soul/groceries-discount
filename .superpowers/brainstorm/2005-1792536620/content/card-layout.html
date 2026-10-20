@@ -1,0 +1,74 @@
+<h2>Carousel card layout</h2>
+<p class="subtitle">Which card layout fits the app best? Same data in all three: Lidl, "lidl card #1", value 634009509005331837. Click to select.</p>
+
+<style>
+  .qc{width:240px;background:#fff;border:1px solid #e4e4e7;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);overflow:hidden;color:#18181b;font-family:system-ui,sans-serif}
+  .qc .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2563eb;margin-right:8px}
+  .qc .t{font-size:14px;font-weight:600;display:flex;align-items:center}
+  .qc .s{font-size:12px;color:#71717a;margin-top:2px}
+  .qc .row{display:flex;align-items:flex-start;justify-content:space-between;padding:14px}
+  .qc .ic{display:flex;gap:4px}
+  .qc .ic span{width:28px;height:28px;border:1px solid #e4e4e7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#52525b}
+  .qc .code{display:flex;justify-content:center;padding:6px 14px 14px}
+  .qr{width:150px;height:150px;background:
+    conic-gradient(#18181b 25%,#fff 0 50%,#18181b 0 75%,#fff 0) 0 0/20px 20px;border:8px solid #fff;outline:1px solid #e4e4e7}
+  .bar{width:200px;height:90px;background:repeating-linear-gradient(90deg,#18181b 0 2px,#fff 2px 4px,#18181b 4px 5px,#fff 5px 8px,#18181b 8px 11px,#fff 11px 12px)}
+  .seg{display:inline-flex;border:1px solid #e4e4e7;border-radius:8px;padding:2px;font-size:12px}
+  .seg b{padding:3px 10px;border-radius:6px;font-weight:500;color:#71717a}
+  .seg b.on{background:#18181b;color:#fff}
+  .sw{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:#71717a;padding:0 14px 14px}
+  .tg{width:32px;height:18px;border-radius:9px;background:#18181b;position:relative}
+  .tg:after{content:"";position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#fff}
+  .val{text-align:center;font-size:12px;letter-spacing:1px;color:#52525b;padding-bottom:12px;font-family:ui-monospace,monospace}
+  .cap{font-size:11px;color:#71717a;margin-top:8px}
+</style>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px;background:#f4f4f5">
+      <div class="qc">
+        <div class="row">
+          <div><div class="t"><i class="dot"></i>Lidl</div><div class="s">lidl card #1</div></div>
+          <div class="ic"><span>✎</span><span>🗑</span></div>
+        </div>
+        <div class="code"><div class="qr"></div></div>
+        <div class="sw">QR <i class="tg"></i> Barcode</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>A · Classic stack</h3><p>Header row with dot, name and icon buttons; code in the middle; switch at the bottom.</p></div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px;background:#f4f4f5">
+      <div class="qc">
+        <div style="background:#2563eb;color:#fff;padding:12px 14px">
+          <div style="font-size:14px;font-weight:600">Lidl</div>
+          <div style="font-size:12px;opacity:.85;margin-top:2px">lidl card #1</div>
+        </div>
+        <div class="code" style="padding-top:14px"><div class="bar"></div></div>
+        <div class="val">634009509005331837</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-top:1px solid #e4e4e7">
+          <div class="seg"><b>QR</b><b class="on">Barcode</b></div>
+          <div class="ic"><span>✎</span><span>🗑</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><h3>B · Colored header</h3><p>Shop color as a top band (bolder indicator), value text under the code, footer with segmented QR/Barcode toggle and actions.</p></div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="display:flex;justify-content:center;padding:16px;background:#f4f4f5">
+      <div class="qc">
+        <div style="padding:12px 14px 0;display:flex;justify-content:center"><div class="seg"><b class="on">QR</b><b>Barcode</b></div></div>
+        <div class="code" style="padding-top:12px"><div class="qr"></div></div>
+        <div style="border-top:1px solid #e4e4e7;display:flex;align-items:center;justify-content:space-between;padding:10px 14px">
+          <div><div class="t"><i class="dot"></i>Lidl</div><div class="s">lidl card #1</div></div>
+          <div class="ic"><span>✎</span><span>🗑</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><h3>C · Code first</h3><p>Code is the hero (easy to scan at the till); switch on top, identity and actions in a footer.</p></div>
+  </div>
+</div>
+
+<p class="cap">Mockups use placeholder code patterns, not real QR/barcodes. In the app the carousel shows one card at a time with prev/next arrows and dots.</p>

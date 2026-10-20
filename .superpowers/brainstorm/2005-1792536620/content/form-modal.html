@@ -1,0 +1,75 @@
+<h2>Create / edit modal and crop step</h2>
+<p class="subtitle">Card C is locked in. Now: how should the crop editor appear after pressing Save? Each option shows the form, then the crop step.</p>
+
+<style>
+  .m{width:250px;background:#fff;border:1px solid #e4e4e7;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);color:#18181b;font-family:system-ui,sans-serif;font-size:12px;padding:14px;position:relative}
+  .m h4{margin:0;font-size:14px;font-weight:600}
+  .m .lb{font-size:11px;font-weight:500;margin:10px 0 4px}
+  .m .f{border:1px solid #e4e4e7;border-radius:8px;height:30px;display:flex;align-items:center;padding:0 10px;justify-content:space-between}
+  .m .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#2563eb;margin-right:6px}
+  .m .hint{font-size:11px;color:#71717a;margin-top:3px}
+  .m .drop{border:1px dashed #a1a1aa;border-radius:8px;height:54px;display:flex;align-items:center;justify-content:center;color:#71717a}
+  .m .ft{display:flex;justify-content:flex-end;gap:6px;margin-top:14px}
+  .m .bt{height:28px;padding:0 12px;border-radius:8px;display:flex;align-items:center;border:1px solid #e4e4e7}
+  .m .bt.p{background:#18181b;color:#fff;border-color:#18181b}
+  .m .crop{height:120px;background:#27272a;border-radius:8px;position:relative;margin-top:10px}
+  .m .crop i{position:absolute;inset:22px 30px;border:2px solid #fff;box-shadow:0 0 0 999px rgba(0,0,0,.45)}
+  .m .crop b{position:absolute;left:12px;right:12px;bottom:8px;height:3px;background:#71717a;border-radius:2px}
+  .stk{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px;background:#f4f4f5}
+  .lay{display:none}
+</style>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image stk">
+      <div class="m"><h4>Add card</h4>
+        <div class="lb">Store</div><div class="f"><span><i class="dot"></i>Lidl</span>⌄</div>
+        <div class="lb">Name</div><div class="f">lidl card #1</div>
+        <div class="lb">QR / barcode image</div><div class="drop">⬆ Upload image</div>
+        <div class="ft"><span class="bt">Cancel</span><span class="bt p">Save</span></div></div>
+      <div style="font-size:18px">↓ Save</div>
+      <div class="m"><h4>Crop the code</h4><div class="hint">Frame only the QR / barcode</div>
+        <div class="crop"><i></i><b></b></div>
+        <div class="ft"><span class="bt">Back</span><span class="bt p">Confirm</span></div></div>
+    </div>
+    <div class="card-body"><h3>A · Same modal, step 2</h3><p>The modal content swaps to the cropper in place. One dialog, no stacking; Back returns to the form with fields kept.</p></div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image stk">
+      <div class="m"><h4>Add card</h4>
+        <div class="lb">Store</div><div class="f"><span><i class="dot"></i>Lidl</span>⌄</div>
+        <div class="lb">Name</div><div class="f">lidl card #1</div>
+        <div class="lb">QR / barcode image</div><div class="drop">⬆ Upload image</div>
+        <div class="ft"><span class="bt">Cancel</span><span class="bt p">Save</span></div></div>
+      <div style="font-size:18px">↓ Save</div>
+      <div style="position:relative;width:250px;height:190px">
+        <div class="m" style="position:absolute;top:0;left:0;opacity:.45;transform:scale(.92)"><h4>Add card</h4><div class="f" style="margin-top:8px">lidl card #1</div></div>
+        <div class="m" style="position:absolute;top:30px;left:10px;width:230px"><h4>Crop the code</h4>
+          <div class="crop" style="height:80px"><i style="inset:14px 24px"></i></div>
+          <div class="ft" style="margin-top:8px"><span class="bt">Cancel</span><span class="bt p">Confirm</span></div></div>
+      </div>
+    </div>
+    <div class="card-body"><h3>B · Nested dialog on top</h3><p>Cropper opens as a second dialog over the dimmed form. Closer to "opens crop editor", but dialogs stack three deep with the list.</p></div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image stk">
+      <div class="m"><h4>Add card</h4>
+        <div class="lb">Store</div><div class="f"><span><i class="dot"></i>Lidl</span>⌄</div>
+        <div class="lb">Name</div><div class="f">lidl card #1</div>
+        <div class="lb">QR / barcode image</div><div class="drop">⬆ Upload image</div>
+        <div class="ft"><span class="bt">Cancel</span><span class="bt p">Save</span></div></div>
+      <div style="font-size:18px">↓ choose file</div>
+      <div class="m"><h4>Add card</h4>
+        <div class="lb">Store</div><div class="f"><span><i class="dot"></i>Lidl</span>⌄</div>
+        <div class="lb">Name</div><div class="f">lidl card #1</div>
+        <div class="lb">QR / barcode image</div><div class="crop" style="margin-top:0;height:90px"><i style="inset:14px 24px"></i></div>
+        <div class="hint">Drag to frame the code · <u>Replace</u></div>
+        <div class="ft"><span class="bt">Cancel</span><span class="bt p">Save</span></div></div>
+    </div>
+    <div class="card-body"><h3>C · Inline crop in the form</h3><p>Choosing a file shows the cropper right in the field; Save decodes. Fewest steps, but deviates from "crop opens on submit".</p></div>
+  </div>
+</div>
+
+<p class="cap" style="font-size:11px;color:#71717a">Common to all: Name prefilled as "{store} card #{n}" (n = that store's cards + 1); the Name field also shows it as the grey sub text under the store name on the card. Decode errors show inline in red under the image field/crop.</p>
