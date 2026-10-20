@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { CategoryKey } from '@/lib/config/categories';
+import { croppedImageConfig } from '@/lib/config/image';
 import type { ApiOffer, BoundaryBox, DisplayOffer } from '@/lib/types';
 import { computeDaysLeft, computeRingPercent } from '@/lib/validity';
 
@@ -50,7 +51,13 @@ export function toDisplayOffer(offer: ApiOffer, now: Date = new Date()): Display
  * container of any size. Fractions are of the page, so background-size is the
  * inverse of the box size and background-position shifts by the box offset.
  */
-export function cropStyle([[x1, y1], [x2, y2]]: BoundaryBox): CSSProperties {
+export function cropStyle(box: BoundaryBox): CSSProperties {
+  const p = croppedImageConfig.boundaryPadding;
+  const clamp = (v: number) => (croppedImageConfig.clampValues ? Math.min(1, Math.max(0, v)) : v);
+  const [[x1, y1], [x2, y2]] = [
+    [clamp(box[0][0] - p), clamp(box[0][1] - p)],
+    [clamp(box[1][0] + p), clamp(box[1][1] + p)],
+  ];
   const w = x2 - x1;
   const h = y2 - y1;
   if (w <= 0 || h <= 0) return { backgroundSize: '100% 100%' };

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { croppedImageConfig } from "./config/image";
 import { computeDisplayDiscount, cropStyle, toDisplayOffer } from "./display";
 import type { ApiOffer } from "./types";
 
@@ -79,29 +80,44 @@ describe("toDisplayOffer", () => {
 });
 
 describe("cropStyle", () => {
-  it("shows the whole image for a full-page box", () => {
-    expect(cropStyle([[0, 0], [1, 1]])).toMatchObject({
+  it("shows the whole image for a full-page box when clampValues is on", () => {
+    Object.assign(croppedImageConfig, { clampValues: true });
+    const style = cropStyle([[0, 0], [1, 1]]);
+    Object.assign(croppedImageConfig, { clampValues: false });
+    expect(style).toMatchObject({
       backgroundSize: "100% 100%",
       backgroundPosition: "0% 0%",
     });
   });
 
-  it("scales the background to the box size", () => {
-    const style = cropStyle([[0.1, 0.2], [0.4, 0.5]]);
-    const w = 0.4 - 0.1;
-    const h = 0.5 - 0.2;
-    expect(style.backgroundSize).toBe(`${100 / w}% ${100 / h}%`);
+  // Box [[0.1,0.2],[0.4,0.5]] padded by 0.05 is [[0.05,0.15],[0.45,0.55]]: w = 0.4, h = 0.4.
+  it("scales the background to the padded box size", () => {
+    const [bw, bh] = String(cropStyle([[0.1, 0.2], [0.4, 0.5]]).backgroundSize).split(" ").map(parseFloat);
+    expect(bw).toBeCloseTo(250);
+    expect(bh).toBeCloseTo(250);
   });
 
-  it("positions the box so its left and top edges line up with the container", () => {
-    // Box starts at x=0.1 with width w: the offset is start / (1 - w) of the slack.
-    const style = cropStyle([[0.1, 0.2], [0.4, 0.5]]);
-    const w = 0.4 - 0.1;
-    const h = 0.5 - 0.2;
-    expect(style.backgroundPosition).toBe(`${(0.1 / (1 - w)) * 100}% ${(0.2 / (1 - h)) * 100}%`);
+  it("positions the padded box so its left and top edges line up with the container", () => {
+    // Padded box starts at 0.05 / 0.15 with size 0.4: the offset is start / (1 - size) of the slack.
+    const [px, py] = String(cropStyle([[0.1, 0.2], [0.4, 0.5]]).backgroundPosition).split(" ").map(parseFloat);
+    expect(px).toBeCloseTo((0.05 / 0.6) * 100);
+    expect(py).toBeCloseTo((0.15 / 0.6) * 100);
   });
 
-  it("falls back to the full image for a degenerate box", () => {
-    expect(cropStyle([[0.5, 0.5], [0.5, 0.5]])).toEqual({ backgroundSize: "100% 100%" });
+  it("clamps the padded box to the page when clampValues is on", () => {
+    // [[0.02,0.98],[0.03,1]] pads to [[0,0.93],[0.08,1]]: w = 0.08, h = 0.07, pinned to the left/bottom edges.
+    Object.assign(croppedImageConfig, { clampValues: true });
+    const style = cropStyle([[0.02, 0.98], [0.03, 1]]);
+    Object.assign(croppedImageConfig, { clampValues: false });
+    const [bw, bh] = String(style.backgroundSize).split(" ").map(parseFloat);
+    const [px, py] = String(style.backgroundPosition).split(" ").map(parseFloat);
+    expect(bw).toBeCloseTo(100 / 0.08);
+    expect(bh).toBeCloseTo(100 / 0.07);
+    expect(px).toBeCloseTo(0);
+    expect(py).toBeCloseTo(100);
+  });
+
+  it("falls back to the full image for an inverted box", () => {
+    expect(cropStyle([[0.6, 0.6], [0.3, 0.3]])).toEqual({ backgroundSize: "100% 100%" });
   });
 });
