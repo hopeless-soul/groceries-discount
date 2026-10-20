@@ -294,7 +294,7 @@ export interface Category {
 export interface Offer {
   id: string;
   title: string;
-  subtitle: string;
+  displaySubtitle: string;
   categoryId: string;
   regularPrice: number;
   discountedPrice: number;
@@ -606,7 +606,7 @@ import type { CartItem } from "@/lib/types";
 const item = (id: string): CartItem => ({
   id,
   title: `Offer ${id}`,
-  subtitle: "",
+  displaySubtitle: "",
   categoryId: "cat-1",
   regularPrice: 2,
   discountedPrice: 1,
@@ -913,7 +913,7 @@ const offerTemplateProps = {
                 offerId: "o1",
                 klNr: "123",
                 title: "Bread",
-                subtitle: "Fresh",
+                displaySubtitle: "Fresh",
                 unit: "1 pc",
                 price: 1.5,
                 formattedOldPrice: "2,00",
@@ -956,7 +956,7 @@ describe("KauflandProvider", () => {
     expect(data.offers[0]).toMatchObject({
       id: "o1",
       title: "Bread",
-      subtitle: "Fresh",
+      displaySubtitle: "Fresh",
       categoryId: "cat-1",
       regularPrice: 2,
       discountedPrice: 1.5,
@@ -1055,7 +1055,7 @@ export class KauflandProvider implements GroceryProvider {
       return {
         id: o.offer_id,
         title: o.title,
-        subtitle: o.subtitle ?? "",
+        displaySubtitle: o.displaySubtitle ?? "",
         categoryId: o.category_id,
         regularPrice,
         discountedPrice: o.price,
@@ -1263,7 +1263,7 @@ export class LidlProvider implements GroceryProvider {
       normalizedOffers.push({
         id: offer.id ?? crypto.randomUUID(),
         title: offer.title ?? "",
-        subtitle: offer.packaging ?? offer.pricePerUnit ?? "",
+        displaySubtitle: offer.packaging ?? offer.pricePerUnit ?? "",
         categoryId,
         regularPrice,
         discountedPrice,
@@ -1901,7 +1901,7 @@ import { StoreName } from "@/providers/types";
 const cartItem = {
   id: "o1",
   title: "Milk",
-  subtitle: "",
+  displaySubtitle: "",
   categoryId: "dairy",
   regularPrice: 2,
   discountedPrice: 1,
@@ -2224,7 +2224,7 @@ import { useCartStore } from "@/lib/stores/cart-store";
 const offer = {
   id: "o1",
   title: "Milk",
-  subtitle: "1 l",
+  displaySubtitle: "1 l",
   categoryId: "dairy",
   regularPrice: 2,
   discountedPrice: 1,
@@ -2307,7 +2307,7 @@ export function OfferCard({ offer, storeId, storeLabel, storeDotColor }: OfferCa
 
       <div>
         <p className="text-sm font-semibold">{offer.title}</p>
-        <p className="text-xs text-[#71717a]">{offer.subtitle}</p>
+        <p className="text-xs text-[#71717a]">{offer.displaySubtitle}</p>
       </div>
 
       <div className="flex items-center gap-2">
@@ -2542,7 +2542,7 @@ vi.mock("@/hooks/useDashboardData", () => ({
 const offer = (id: string, categoryId: string) => ({
   id,
   title: `Offer ${id}`,
-  subtitle: "",
+  displaySubtitle: "",
   categoryId,
   regularPrice: 2,
   discountedPrice: 1,
@@ -2710,7 +2710,7 @@ import { CartItemRow } from "./CartItemRow";
 const item = {
   id: "o1",
   title: "Milk",
-  subtitle: "1 l",
+  displaySubtitle: "1 l",
   categoryId: "dairy",
   regularPrice: 2,
   discountedPrice: 1,
@@ -2813,7 +2813,7 @@ import { StoreName } from "@/providers/types";
 const item = {
   id: "o1",
   title: "Milk",
-  subtitle: "",
+  displaySubtitle: "",
   categoryId: "dairy",
   regularPrice: 2,
   discountedPrice: 1,
@@ -2983,7 +2983,7 @@ beforeEach(() => {
         {
           id: "o1",
           title: "Bread",
-          subtitle: "",
+          displaySubtitle: "",
           categoryId: "bakery",
           regularPrice: 2,
           discountedPrice: 1,

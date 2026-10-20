@@ -3,10 +3,11 @@ import type { CategoryKey } from '@/lib/config/categories';
 import { croppedImageConfig } from '@/lib/config/image';
 import type { ApiOffer, BoundaryBox, DisplayOffer } from '@/lib/types';
 import { computeDaysLeft, computeRingPercent } from '@/lib/validity';
+import { splitOfferTitle } from './splitOfferTitle';
 
-// shortcut: stub until real title parsing exists, upgrade when the API splits title and subtitle
-export function parseTitle(title: string): { displayTitle: string; subtitle: string | null } {
-  return { displayTitle: title, subtitle: 'lorem ipsum' };
+export function parseTitle(title: string): { displayTitle: string; displaySubtitle: string | null } {
+  const {displayTitle, displaySubtitle} = splitOfferTitle(title)
+  return { displayTitle, displaySubtitle };
 }
 
 /** The price the discount is measured from: the loyalty price when the shop has one. */
@@ -23,12 +24,12 @@ export function computeDisplayDiscount(
 }
 
 export function toDisplayOffer(offer: ApiOffer, now: Date = new Date()): DisplayOffer {
-  const { displayTitle, subtitle } = parseTitle(offer.title);
+  const { displayTitle, displaySubtitle } = parseTitle(offer.title);
   return {
     id: offer.id,
     shop: offer.shop,
     displayTitle,
-    subtitle,
+    displaySubtitle,
     category: offer.category,
     basePrice: offer.basePrice,
     discountedPrice: offer.discountedPrice,
@@ -51,9 +52,9 @@ export function toDisplayOffer(offer: ApiOffer, now: Date = new Date()): Display
  * container of any size. Fractions are of the page, so background-size is the
  * inverse of the box size and background-position shifts by the box offset.
  */
-export function cropStyle(box: BoundaryBox): CSSProperties {
+export function cropStyle(box: BoundaryBox, clampValues: boolean = croppedImageConfig.clampValues): CSSProperties {
   const p = croppedImageConfig.boundaryPadding;
-  const clamp = (v: number) => (croppedImageConfig.clampValues ? Math.min(1, Math.max(0, v)) : v);
+  const clamp = (v: number) => (clampValues ? Math.min(1, Math.max(0, v)) : v);
   const [[x1, y1], [x2, y2]] = [
     [clamp(box[0][0] - p), clamp(box[0][1] - p)],
     [clamp(box[1][0] + p), clamp(box[1][1] + p)],

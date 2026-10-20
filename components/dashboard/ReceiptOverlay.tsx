@@ -6,6 +6,7 @@ import { DialogClose, DialogPortal } from "@/components/ui/dialog";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import { OfferImage } from "@/components/dashboard/OfferImage";
+import { OfferPreviewDialog } from "@/components/dashboard/OfferPreviewDialog";
 import { referencePrice } from "@/lib/display";
 import { groupCartItemsByStore, type ReceiptStoreGroup } from "@/lib/receipt";
 
@@ -86,7 +87,11 @@ function StoreGroupBlock({ group }: { group: ReceiptStoreGroup }) {
         const discountPct = item.displayDiscount ?? 0;
         const price = referencePrice(item);
         return (
-          <div key={item.id} className="flex items-center justify-between gap-3 py-1 text-sm">
+          <OfferPreviewDialog
+            key={item.id}
+            offer={item}
+            className="flex w-full items-center justify-between gap-3 py-1 text-left text-sm"
+          >
             <span className="flex min-w-0 items-center gap-2">
               <OfferImage offer={item} className="h-6 w-6 flex-shrink-0 border border-[#18181b]/20" />
               <span className="">
@@ -97,7 +102,7 @@ function StoreGroupBlock({ group }: { group: ReceiptStoreGroup }) {
               </span>
             </span>
             <span className="flex-shrink-0">{price != null ? price.toFixed(2) : "—"}</span>
-          </div>
+          </OfferPreviewDialog>
         );
       })}
       <div className="mt-2 border-t border-dashed border-[#18181b]/40 pt-2">

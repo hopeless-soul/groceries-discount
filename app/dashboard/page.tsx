@@ -13,6 +13,7 @@ import { isOfferAvailable } from "@/lib/availability";
 import { useHasHydrated } from "@/hooks/useHasHydrated";
 import { useShopOffers } from "@/hooks/useShopOffers";
 import { useShops } from "@/hooks/useShops";
+import { clearFetchCache } from "@/lib/cache/fetchCache";
 import { categoryDescriptions } from "@/lib/config/categories";
 import { shopConfigs } from "@/lib/config/shops";
 import { countByCategory, toDisplayOffer } from "@/lib/display";
@@ -46,7 +47,14 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <AppHeader />
+      <AppHeader
+        onRefresh={() => {
+          clearFetchCache();
+          shops.refetch();
+          shopOffers.refetch();
+        }}
+        refreshing={shops.loading || shopOffers.loading}
+      />
       <div className="flex flex-1 overflow-hidden">
         <DashboardSidebar
           categories={categories}

@@ -46,7 +46,7 @@ export interface DisplayOffer {
   id: string;
   shop: ShopKey;
   displayTitle: string;
-  subtitle: string | null;
+  displaySubtitle: string | null;
   category: CategoryKey[];
   basePrice: number | null;
   discountedPrice: number | null;

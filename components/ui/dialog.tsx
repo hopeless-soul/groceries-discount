@@ -14,7 +14,9 @@ function DialogPortal({
 }: React.ComponentProps<typeof DialogPrimitive.Portal>) {
   return (
     <DialogPrimitive.Portal {...props}>
+      {/* forceRender: nested dialogs (preview over receipt) only close on a click on their own backdrop. */}
       <DialogPrimitive.Backdrop
+        forceRender
         data-slot="dialog-backdrop"
         className="fixed inset-0 z-50 bg-black/50 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0"
       />

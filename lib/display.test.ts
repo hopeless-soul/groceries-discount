@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { croppedImageConfig } from "./config/image";
 import { computeDisplayDiscount, cropStyle, toDisplayOffer } from "./display";
 import type { ApiOffer } from "./types";
@@ -46,10 +46,10 @@ describe("computeDisplayDiscount", () => {
 });
 
 describe("toDisplayOffer", () => {
-  it("keeps the title and sets the stub subtitle", () => {
+  it("keeps the title and sets the stub displaySubtitle", () => {
     const display = toDisplayOffer(offer);
     expect(display.displayTitle).toBe("Coffee");
-    expect(display.subtitle).toBe("lorem ipsum");
+    expect(display.displaySubtitle).toBe("lorem ipsum");
   });
 
   it("counts the whole validTo day as left", () => {
@@ -80,10 +80,13 @@ describe("toDisplayOffer", () => {
 });
 
 describe("cropStyle", () => {
+  const original = { ...croppedImageConfig };
+  beforeEach(() => Object.assign(croppedImageConfig, { boundaryPadding: 0.05, clampValues: false }));
+  afterEach(() => Object.assign(croppedImageConfig, original));
+
   it("shows the whole image for a full-page box when clampValues is on", () => {
     Object.assign(croppedImageConfig, { clampValues: true });
     const style = cropStyle([[0, 0], [1, 1]]);
-    Object.assign(croppedImageConfig, { clampValues: false });
     expect(style).toMatchObject({
       backgroundSize: "100% 100%",
       backgroundPosition: "0% 0%",
@@ -108,7 +111,6 @@ describe("cropStyle", () => {
     // [[0.02,0.98],[0.03,1]] pads to [[0,0.93],[0.08,1]]: w = 0.08, h = 0.07, pinned to the left/bottom edges.
     Object.assign(croppedImageConfig, { clampValues: true });
     const style = cropStyle([[0.02, 0.98], [0.03, 1]]);
-    Object.assign(croppedImageConfig, { clampValues: false });
     const [bw, bh] = String(style.backgroundSize).split(" ").map(parseFloat);
     const [px, py] = String(style.backgroundPosition).split(" ").map(parseFloat);
     expect(bw).toBeCloseTo(100 / 0.08);

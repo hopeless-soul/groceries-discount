@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { OfferCard } from "./OfferCard";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import { makeDisplayOffer } from "@/lib/test-utils/fixtures";
 
-const offer = makeDisplayOffer({ displayTitle: "Milk", subtitle: "1 l" });
+const offer = makeDisplayOffer({ displayTitle: "Milk", displaySubtitle: "1 l" });
 
 beforeEach(() => {
   localStorage.clear();
@@ -51,6 +51,17 @@ describe("OfferCard", () => {
     useDashboardUiStore.setState({ showImages: true });
     render(<OfferCard offer={{ ...offer, isCropped: true, boundaryBox: [[0.1, 0.2], [0.4, 0.5]] }} />);
     expect(screen.getByRole("img", { name: "Milk" })).toBeInTheDocument();
+  });
+
+  it("opens a preview popup with the offer but no cart button when the image is clicked", async () => {
+    useDashboardUiStore.setState({ showImages: true });
+    const user = userEvent.setup();
+    render(<OfferCard offer={{ ...offer, isCropped: false }} />);
+    await user.click(screen.getByRole("button", { name: "Preview image" }));
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByText("Milk")).toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: /add to cart/i })).not.toBeInTheDocument();
   });
 
   it("hides the offer image when showImages is off, even if imageUrl is present", () => {

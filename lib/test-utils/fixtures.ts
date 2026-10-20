@@ -6,7 +6,7 @@ export function makeDisplayOffer(overrides: Partial<DisplayOffer> = {}): Display
     id: "o1",
     shop: "lidl",
     displayTitle: "Milk",
-    subtitle: null,
+    displaySubtitle: null,
     category: ["beverages"],
     basePrice: 2,
     discountedPrice: 1,

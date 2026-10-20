@@ -217,7 +217,7 @@ Renders the 3-pane layout:
 ### Components
 
 - **`OfferCard`** — header (store dot/name + `ValidityRing`),
-  title/subtitle, price row (struck-through regular, bold discounted, green
+  title/displaySubtitle, price row (struck-through regular, bold discounted, green
   `-N%` pill), "Valid until" line, full-width Add-to-cart button toggling
   `useCartStore` membership (outline+`+` vs solid+check).
 - **`ValidityRing`** — pure presentational SVG, props `{ ringPercent,

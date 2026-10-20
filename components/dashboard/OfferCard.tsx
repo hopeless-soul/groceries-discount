@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { OfferImage } from "@/components/dashboard/OfferImage";
+import { OfferPreviewDialog } from "@/components/dashboard/OfferPreviewDialog";
 import { ValidityRing } from "@/components/dashboard/ValidityRing";
 import { shopConfigs } from "@/lib/config/shops";
 import { formatValidDate, referencePrice } from "@/lib/display";
@@ -11,9 +12,11 @@ import type { DisplayOffer } from "@/lib/types";
 
 interface OfferCardProps {
   offer: DisplayOffer;
+  /** Popup variant: big fitted image, no cart button. */
+  preview?: boolean;
 }
 
-export function OfferCard({ offer }: OfferCardProps) {
+export function OfferCard({ offer, preview = false }: OfferCardProps) {
   const inCart = useCartStore((s) => s.has(offer.id));
   const add = useCartStore((s) => s.add);
   const remove = useCartStore((s) => s.remove);
@@ -32,18 +35,26 @@ export function OfferCard({ offer }: OfferCardProps) {
         <ValidityRing ringPercent={offer.ringPercent} daysLeft={offer.daysLeft} />
       </div>
 
-      <div
-        className="grid transition-[grid-template-rows] duration-300 ease-in-out"
-        style={{ gridTemplateRows: showImages ? "1fr" : "0fr" }}
-      >
-        <div className="overflow-hidden">
-          {showImages && <OfferImage offer={offer} className="h-40 w-full" />}
+      {preview ? (
+        <OfferImage offer={offer} fit="contain" className="h-[60vh] w-full" />
+      ) : (
+        <div
+          className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+          style={{ gridTemplateRows: showImages ? "1fr" : "0fr" }}
+        >
+          <div className="overflow-hidden">
+            {showImages && (
+              <OfferPreviewDialog offer={offer}>
+                <OfferImage offer={offer} className="h-40 w-full" />
+              </OfferPreviewDialog>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div>
         <p className="text-sm font-semibold">{offer.displayTitle}</p>
-        {offer.subtitle && <p className="text-xs text-[#71717a]">{offer.subtitle}</p>}
+        {offer.displaySubtitle && <p className="text-xs text-[#71717a]">{offer.displaySubtitle}</p>}
       </div>
 
       <div className="flex items-center gap-2">
@@ -67,15 +78,17 @@ export function OfferCard({ offer }: OfferCardProps) {
 
       <p className="text-[11px] text-[#a1a1aa]">Valid until {formatValidDate(offer.validTo)}</p>
 
-      <div className="flex flex-col justify-end flex-1">
-        <Button
-          variant={inCart ? "default" : "outline"}
-          className="w-full"
-          onClick={() => (inCart ? remove(offer.id) : add(offer))}
-        >
-          {inCart ? "In cart" : "Add to cart"}
-        </Button>
-      </div>
+      {!preview && (
+        <div className="flex flex-col justify-end flex-1">
+          <Button
+            variant={inCart ? "default" : "outline"}
+            className="w-full"
+            onClick={() => (inCart ? remove(offer.id) : add(offer))}
+          >
+            {inCart ? "In cart" : "Add to cart"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -159,7 +159,7 @@ function makeItem(overrides: Partial<CartItem>): CartItem {
   return {
     id: "o1",
     title: "Milk",
-    subtitle: "",
+    displaySubtitle: "",
     categoryId: "dairy",
     regularPrice: 2,
     discountedPrice: 1,
@@ -330,7 +330,7 @@ import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 const item = {
   id: "o1",
   title: "Milk",
-  subtitle: "",
+  displaySubtitle: "",
   categoryId: "dairy",
   regularPrice: 2,
   discountedPrice: 1,
@@ -453,7 +453,7 @@ function makeItem(overrides: Partial<CartItem>): CartItem {
   return {
     id: "o1",
     title: "Milk",
-    subtitle: "",
+    displaySubtitle: "",
     categoryId: "dairy",
     regularPrice: 2,
     discountedPrice: 1,

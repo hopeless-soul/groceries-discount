@@ -1019,7 +1019,7 @@ import { StoreName } from "@/providers/types";
 const cartItem = {
   id: "o1",
   title: "Milk",
-  subtitle: "",
+  displaySubtitle: "",
   categoryId: "dairy",
   regularPrice: 2,
   discountedPrice: 1,

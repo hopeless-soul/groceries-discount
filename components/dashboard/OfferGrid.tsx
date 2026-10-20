@@ -87,7 +87,7 @@ export function OfferGrid({
           (o) =>
             isOfferAvailable(o) &&
             (normalizeSearchText(o.displayTitle).includes(query) ||
-              normalizeSearchText(o.subtitle ?? "").includes(query)),
+              normalizeSearchText(o.displaySubtitle ?? "").includes(query)),
         ),
       sortBy,
     );
