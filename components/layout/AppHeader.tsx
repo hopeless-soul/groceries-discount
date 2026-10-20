@@ -31,7 +31,9 @@ export function AppHeader({ onRefresh, refreshing = false }: AppHeaderProps) {
         aria-label="Open menu"
         className="flex items-center gap-2 lg:cursor-default"
       >
-        <BascetLogo aria-hidden="true" className="h-8 w-8 text-[#18181b]" />
+        <span className="mb-1">
+          <BascetLogo aria-hidden="true" className="h-8 w-8 opacity-90" />
+        </span>
         <span className="text-base font-semibold">Basket</span>
       </button>
 
