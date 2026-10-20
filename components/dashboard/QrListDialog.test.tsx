@@ -62,6 +62,21 @@ describe("QrListDialog", () => {
     expect(screen.getByRole("heading", { name: "Edit card" })).toBeInTheDocument();
   });
 
+  it("switches every card between QR and barcode together", async () => {
+    const user = userEvent.setup();
+    useQrCardsStore.setState({
+      cards: [card, { id: "2", shop: "tesco" as const, name: "tesco card #1", value: "1234567890" }],
+    });
+    useDashboardUiStore.setState({ qrOpen: true });
+    render(<QrListDialog />);
+    expect(screen.getAllByTestId("qr-code")).toHaveLength(2);
+
+    await user.click(screen.getAllByRole("switch", { name: "Barcode" })[0]);
+    expect(screen.getAllByTestId("barcode")).toHaveLength(2);
+    expect(screen.queryByTestId("qr-code")).not.toBeInTheDocument();
+    screen.getAllByRole("switch", { name: "Barcode" }).forEach((s) => expect(s).toHaveAttribute("aria-checked", "true"));
+  });
+
   it("deletes a card", async () => {
     const user = userEvent.setup();
     useQrCardsStore.setState({ cards: [card] });

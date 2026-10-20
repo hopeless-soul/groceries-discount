@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+import { CircleCheck, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -120,21 +121,23 @@ export function QrCardFormDialog({ card, onClose }: QrCardFormDialogProps) {
             </div>
 
             <div>
-              <label htmlFor="qr-card-image" className="mb-1 block text-xs font-medium">
-                QR / barcode image
-              </label>
+              <div className="mb-1 text-xs font-medium">Code image</div>
               <input
                 id="qr-card-image"
+                aria-label="QR / barcode image"
                 type="file"
                 accept="image/*"
                 onChange={handleFile}
-                className="w-full text-xs file:mr-2 file:rounded-md file:border file:border-[#e4e4e7] file:bg-white file:px-2 file:py-1"
+                className="peer sr-only"
               />
-              {imageSrc ? (
-                <p className="mt-1 text-xs text-[#71717a]">Image selected. Choose another to replace it.</p>
-              ) : (
-                card && <p className="mt-1 text-xs text-[#71717a]">Leave empty to keep the current code.</p>
-              )}
+              <label
+                htmlFor="qr-card-image"
+                className="flex h-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-[#d4d4d8] text-sm text-[#71717a] transition-colors hover:border-[#a1a1aa] hover:bg-[#fafafa] peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50"
+              >
+                {imageSrc ? <CircleCheck className="h-5 w-5 text-[#15803d]" /> : <Upload className="h-5 w-5" />}
+                <span>{imageSrc ? "Image selected, tap to replace" : "Tap to upload a photo or screenshot"}</span>
+              </label>
+              {!imageSrc && card && <p className="mt-1 text-xs text-[#71717a]">Leave empty to keep the current code.</p>}
             </div>
 
             {error && (

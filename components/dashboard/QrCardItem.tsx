@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import Barcode from "react-barcode";
 import { Pencil, Trash2 } from "lucide-react";
@@ -9,42 +8,50 @@ import { Button } from "@/components/ui/button";
 import { shopConfigs } from "@/lib/config/shops";
 import type { QrCard } from "@/lib/stores/qr-cards-store";
 
-type Mode = "qr" | "barcode";
-
-const MODES: { mode: Mode; label: string }[] = [
-  { mode: "qr", label: "QR" },
-  { mode: "barcode", label: "Barcode" },
-];
+export type CodeMode = "qr" | "barcode";
 
 interface QrCardItemProps {
   card: QrCard;
+  mode: CodeMode;
+  onModeChange: (mode: CodeMode) => void;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-export function QrCardItem({ card, onEdit, onDelete }: QrCardItemProps) {
-  const [mode, setMode] = useState<Mode>("qr");
+export function QrCardItem({ card, mode, onModeChange, onEdit, onDelete }: QrCardItemProps) {
   const shop = shopConfigs[card.shop];
 
   return (
     <div className="w-full overflow-hidden rounded-2xl bg-white text-[#18181b] shadow-xl">
       <div className="flex justify-center px-4 pt-4">
-        <div role="group" aria-label="Code type" className="inline-flex rounded-full bg-[#f4f4f5] p-1 text-sm">
-          {MODES.map(({ mode: m, label }) => (
-            <button
-              key={m}
-              type="button"
-              aria-pressed={mode === m}
-              onClick={() => setMode(m)}
-              className={cn(
-                "rounded-full px-4 py-1.5 font-medium text-[#71717a] transition-colors",
-                mode === m && "bg-[#18181b] text-white shadow-sm"
-              )}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        {/* One switch: a click anywhere on it flips the mode. Checked = barcode. */}
+        <button
+          type="button"
+          role="switch"
+          aria-checked={mode === "barcode"}
+          aria-label="Barcode"
+          onClick={() => onModeChange(mode === "qr" ? "barcode" : "qr")}
+          className="relative inline-grid cursor-pointer grid-cols-2 rounded-full bg-[#f4f4f5] p-1 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          {/* Sliding thumb: both labels are equal width, so it moves by exactly its own width. */}
+          <span
+            aria-hidden
+            className="absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-[#18181b] shadow-sm transition-transform duration-150 ease-out"
+            style={{ transform: mode === "qr" ? "translateX(0)" : "translateX(100%)" }}
+          />
+          <span
+            aria-hidden
+            className={cn("relative z-10 px-4 py-1.5 font-medium text-[#71717a] transition-colors duration-150", mode === "qr" && "text-white")}
+          >
+            QR
+          </span>
+          <span
+            aria-hidden
+            className={cn("relative z-10 px-4 py-1.5 font-medium text-[#71717a] transition-colors duration-150", mode === "barcode" && "text-white")}
+          >
+            Barcode
+          </span>
+        </button>
       </div>
 
       <div className="flex h-96 items-center justify-center overflow-hidden px-4">
@@ -60,7 +67,11 @@ export function QrCardItem({ card, onEdit, onDelete }: QrCardItemProps) {
         )}
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t border-[#f4f4f5] px-4 py-3">
+      {/* ~8% tint of the shop color (hex alpha 14) so cards are recognisable at a glance. */}
+      <div
+        className="flex items-center justify-between gap-3 border-t border-[#f4f4f5] px-4 py-3"
+        style={{ backgroundColor: `${shop.color}14` }}
+      >
         <div className="min-w-0">
           <div className="flex items-center text-base font-semibold">
             <span
@@ -76,7 +87,14 @@ export function QrCardItem({ card, onEdit, onDelete }: QrCardItemProps) {
           <Button type="button" variant="outline" size="icon" className="size-10 rounded-full" aria-label={`Edit ${card.name}`} onClick={onEdit}>
             <Pencil />
           </Button>
-          <Button type="button" variant="outline" size="icon" className="size-10 rounded-full" aria-label={`Delete ${card.name}`} onClick={onDelete}>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="size-10 rounded-full text-[#dc2626] hover:text-[#dc2626]"
+            aria-label={`Delete ${card.name}`}
+            onClick={onDelete}
+          >
             <Trash2 />
           </Button>
         </div>
