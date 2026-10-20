@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { Dialog } from "@/components/ui/dialog";
 import { OfferCard } from "./OfferCard";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
@@ -65,6 +66,23 @@ describe("OfferCard", () => {
 
     await user.click(within(dialog).getByRole("button", { name: "Close" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  it("toggles a cropped preview between the cropped region and the full page", async () => {
+    const user = userEvent.setup();
+    render(<Dialog><OfferCard preview offer={{ ...offer, isCropped: true, boundaryBox: [[0.1, 0.2], [0.4, 0.5]] }} /></Dialog>);
+    expect(screen.queryByRole("img", { name: "Milk" })?.tagName).toBe("DIV");
+
+    const toggle = screen.getByRole("switch", { name: "Show full page" });
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+    await user.click(toggle);
+    expect(screen.getByRole("img", { name: "Milk" }).tagName).toBe("IMG");
+    expect(toggle).toHaveAttribute("aria-checked", "true");
+  });
+
+  it("shows no image toggle in the preview of an uncropped offer", () => {
+    render(<Dialog><OfferCard preview offer={{ ...offer, isCropped: false }} /></Dialog>);
+    expect(screen.queryByRole("switch")).not.toBeInTheDocument();
   });
 
   it("hides the offer image when showImages is off, even if imageUrl is present", () => {

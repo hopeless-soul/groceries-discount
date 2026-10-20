@@ -1,6 +1,7 @@
 "use client";
 
-import { X } from "lucide-react";
+import { useState } from "react";
+import { BookOpenText, Image as ImageIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
 import { OfferImage } from "@/components/dashboard/OfferImage";
@@ -23,6 +24,7 @@ export function OfferCard({ offer, preview = false }: OfferCardProps) {
   const add = useCartStore((s) => s.add);
   const remove = useCartStore((s) => s.remove);
   const showImages = useDashboardUiStore((s) => s.showImages);
+  const [showSource, setShowSource] = useState(false);
   const shop = shopConfigs[offer.shop];
   const price = referencePrice(offer);
   const percent = offer.displayDiscount;
@@ -44,7 +46,29 @@ export function OfferCard({ offer, preview = false }: OfferCardProps) {
       </div>
 
       {preview ? (
-        <OfferImage offer={offer} fit="contain" className="h-[60vh] w-full" />
+        <div className="relative">
+          <OfferImage
+            offer={showSource ? { ...offer, isCropped: false } : offer}
+            fit="contain"
+            className="h-[60vh] w-full"
+          />
+          {offer.isCropped && (
+            <button
+              type="button"
+              role="switch"
+              aria-checked={showSource}
+              aria-label="Show full page"
+              onClick={() => setShowSource((v) => !v)}
+              className="absolute right-2 top-2 grid h-7 w-14 grid-cols-2 items-center rounded-full border border-[#e4e4e7] bg-white/80 p-0.5 backdrop-blur origin-top-right scale-120"
+            >
+              <span
+                className={`absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded-full bg-[#18181b] transition-transform duration-200 ${showSource ? "translate-x-full" : ""}`}
+              />
+              <ImageIcon className={`relative mx-auto size-3.5 ${showSource ? "text-[#71717a]" : "text-white"}`} />
+              <BookOpenText className={`relative mx-auto size-3.5 ${showSource ? "text-white" : "text-[#71717a]"}`} />
+            </button>
+          )}
+        </div>
       ) : (
         <div
           className="grid transition-[grid-template-rows] duration-300 ease-in-out"
