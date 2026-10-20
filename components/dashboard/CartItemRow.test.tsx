@@ -8,7 +8,7 @@ import { toLocalDateString } from "@/lib/validity";
 // Valid until today, so the row is in the urgent (red) range.
 const item = makeDisplayOffer({
   displayTitle: "Milk",
-  displaydisplaydisplaydisplaydisplaydisplaydisplaydisplaydisplaySubtitle: "1 l",
+  displaySubtitle: "1 l",
   validTo: toLocalDateString(),
   displayDiscount: 50,
 });
