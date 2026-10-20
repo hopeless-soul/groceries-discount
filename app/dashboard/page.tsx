@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { OfferGrid } from "@/components/dashboard/OfferGrid";
 import { CartPanel } from "@/components/dashboard/CartPanel";
+import { QrButton } from "@/components/dashboard/QrButton";
 import { ReceiptButton } from "@/components/dashboard/ReceiptButton";
 import { ReceiptOverlay } from "@/components/dashboard/ReceiptOverlay";
 import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
@@ -103,7 +104,10 @@ export default function DashboardPage() {
         </div>
         <CartPanel />
       </div>
-      <ReceiptButton />
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
+        <ReceiptButton />
+        <QrButton />
+      </div>
       <ReceiptOverlay />
     </div>
   );
