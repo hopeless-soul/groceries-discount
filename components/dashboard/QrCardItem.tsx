@@ -61,8 +61,9 @@ export function QrCardItem({ card, mode, onModeChange, onEdit, onDelete }: QrCar
             <QRCodeSVG value={card.value} size={256} className="h-auto w-full" />
           </div>
         ) : (
-          <div data-testid="barcode" className="max-w-full mx-6 py-6">
-            <Barcode value={card.value} format="CODE128" width={1.5} height={110} displayValue={false} margin={0} />
+          <div data-testid="barcode" className="min-w-0 flex-1 mx-6 py-6">
+            {/* The SVG has a viewBox, so w-full scales the bars and keeps their proportions. */}
+            <Barcode value={card.value} format="CODE128" width={1.5} height={110} displayValue={false} margin={0} className="block h-auto w-full" />
             <div className="mt-2 text-center font-mono text-xs text-[#71717a]">{card.value}</div>
           </div>
         )}

@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Lets a phone on the same Wi-Fi load dev assets (otherwise 403).
+  allowedDevOrigins: ["192.168.1.130"],
   turbopack: {
     // Lets `import Logo from "@/public/x.svg"` render the file as an inline
     // <svg> React component so CSS (fill, currentColor) can style it.

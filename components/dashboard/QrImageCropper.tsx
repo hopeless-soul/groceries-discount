@@ -39,10 +39,16 @@ export function QrImageCropper({ imageSrc, onBack, onConfirm }: QrImageCropperPr
   return (
     <div>
       <p className="text-xs text-[#71717a]">Frame only the QR code or barcode.</p>
-      <div className="mt-2 flex max-h-72 justify-center overflow-auto rounded-lg bg-[#27272a]">
-        <ReactCrop crop={crop} onChange={(c) => setCrop(c)} onComplete={(c) => setCompleted(c)}>
+      <div className="mt-2 flex justify-center rounded-lg bg-[#27272a]">
+        {/* Height cap goes on ReactCrop: its child wrapper and image inherit max-height from it, so the image fits by height. */}
+        <ReactCrop
+          crop={crop}
+          onChange={(c) => setCrop(c)}
+          onComplete={(c) => setCompleted(c)}
+          className="max-h-[min(28rem,calc(100dvh-16rem))]"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img ref={imgRef} src={imageSrc} alt="Uploaded code" className="max-h-72 w-auto" />
+          <img ref={imgRef} src={imageSrc} alt="Uploaded code" />
         </ReactCrop>
       </div>
       {error && (
