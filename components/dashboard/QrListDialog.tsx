@@ -45,13 +45,15 @@ export function QrListDialog() {
       }}
     >
       <DialogPortal>
+        {/* Blur sits under the dimming backdrop (z-50): blur on the top layer stopped Safari from darkening its URL/status bars. */}
+        <div aria-hidden className="fixed inset-0 z-40 backdrop-blur-sm" />
         {/* Frameless overlay: a tap on empty space (the popup itself, not a child) closes it. */}
         <DialogPrimitive.Popup
           data-testid="qr-overlay"
           onClick={(e) => {
             if (e.target === e.currentTarget) toggleQrOpen();
           }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 px-4 py-6 outline-none backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 px-4 py-6 outline-none data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0"
         >
           <DialogPrimitive.Title className="sr-only">My cards</DialogPrimitive.Title>
 
