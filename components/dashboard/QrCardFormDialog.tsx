@@ -56,6 +56,7 @@ export function QrCardFormDialog({ card, onClose }: QrCardFormDialogProps) {
     }
     setError("");
     setImageSrc(URL.createObjectURL(file));
+    setStep("crop");
   }
 
   function handleSave() {

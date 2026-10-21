@@ -55,7 +55,6 @@ describe("QrCardFormDialog", () => {
     await user.clear(name);
     await user.type(name, "my lidl card");
     await user.upload(screen.getByLabelText(/qr \/ barcode image/i), file());
-    await user.click(screen.getByRole("button", { name: "Save" }));
 
     await user.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByLabelText("Name")).toHaveValue("my lidl card");
