@@ -42,7 +42,7 @@ export function HomePage() {
       </main>
 
       <footer className="w-full border-t border-border bg-white px-4 py-3 text-center text-xs text-zinc-600 sm:px-5">
-        Offers are provided by each store and may change.
+        <a href="https://ko-fi.com/F5W729A98H">H K / dev.</a>
       </footer>
     </div>
   )
