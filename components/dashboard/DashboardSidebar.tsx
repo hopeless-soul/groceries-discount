@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { Menu } from "lucide-react";
+import BascetLogo from "@/public/bascet_logo.svg";
+import { AnimatedHeadline } from "@/components/home/AnimatedHeadline";
 import { StoreList } from "@/components/dashboard/StoreList";
 import { CategoryList } from "@/components/dashboard/CategoryList";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
@@ -54,7 +57,15 @@ export function DashboardSidebar({ categories, totalCount, statuses }: Dashboard
         <Menu className="h-5 w-5" />
       </DrawerTrigger>
       <DrawerContent side="left">
+        <Link href="/" className="flex items-center gap-1 px-4 py-4">
+          <BascetLogo aria-hidden="true" className="h-8 w-8 opacity-90" />
+          <AnimatedHeadline as="span" className="text-base font-semibold mt-1">
+            Basket
+          </AnimatedHeadline>
+        </Link>
+        <h2 className="px-6 pt-4 text-xs font-medium text-zinc-500">Shops</h2>
         <StoreList statuses={statuses} />
+        <h2 className="px-6 pt-4 text-xs font-medium text-zinc-500">Categories</h2>
         <CategoryList categories={categories} totalCount={totalCount} />
       </DrawerContent>
     </Drawer>

@@ -1,6 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { RefreshCw } from "lucide-react";
+import { useIsDesktop } from "@/hooks/useIsDesktop";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { KofiButton } from "@/components/layout/KofiButton";
@@ -17,6 +19,9 @@ export function AppHeader({ onRefresh, refreshing = false }: AppHeaderProps) {
   const itemCount = useCartStore((s) => s.items.length);
   const toggleCartOpen = useDashboardUiStore((s) => s.toggleCartOpen);
   const toggleSidebarOpen = useDashboardUiStore((s) => s.toggleSidebarOpen);
+  const router = useRouter();
+  // Desktop: the brand returns to the home page. Mobile: it still opens the drawer.
+  const isDesktop = useIsDesktop();
   const today = new Date().toLocaleDateString(undefined, {
     weekday: "long",
     year: "numeric",
@@ -28,9 +33,9 @@ export function AppHeader({ onRefresh, refreshing = false }: AppHeaderProps) {
     <header className="relative flex h-16 items-center justify-between border-b border-[#e4e4e7] bg-white px-6">
       <button
         type="button"
-        onClick={toggleSidebarOpen}
-        aria-label="Open menu"
-        className="flex items-center gap-2 lg:cursor-default"
+        onClick={() => (isDesktop ? router.push("/") : toggleSidebarOpen())}
+        aria-label={isDesktop ? "Home" : "Open menu"}
+        className="flex items-center gap-1"
       >
         <span className="mb-1">
           <BascetLogo aria-hidden="true" className="h-8 w-8 opacity-90" />

@@ -10,6 +10,7 @@ import { ReceiptButton } from "@/components/dashboard/ReceiptButton";
 import { ReceiptOverlay } from "@/components/dashboard/ReceiptOverlay";
 import { QrListDialog } from "@/components/dashboard/QrListDialog";
 import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
+import { FadeInOverlay } from "@/components/dashboard/FadeInOverlay";
 import { Input } from "@/components/ui/input";
 import { isOfferAvailable } from "@/lib/availability";
 import { useHasHydrated } from "@/hooks/useHasHydrated";
@@ -49,6 +50,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-full flex-col">
+      <FadeInOverlay />
       <AppHeader
         onRefresh={() => {
           clearFetchCache();

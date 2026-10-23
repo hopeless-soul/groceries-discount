@@ -43,3 +43,5 @@ next-env.d.ts
 
 # Docs
 /docs
+# brainstorm companion sessions
+.superpowers/

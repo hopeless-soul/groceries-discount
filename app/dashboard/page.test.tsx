@@ -15,6 +15,7 @@ vi.mock("@/hooks/useShopOffers", () => ({
 }));
 
 vi.mock("@/public/bascet_logo.svg", () => ({ default: () => null }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import DashboardPage from "./page";

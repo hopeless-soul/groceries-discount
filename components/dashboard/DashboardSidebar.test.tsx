@@ -1,7 +1,15 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { DashboardSidebar } from "./DashboardSidebar";
+
+vi.mock("@/public/bascet_logo.svg", () => ({ default: () => null }));
+// anime.js text splitting needs document.fonts, which jsdom lacks.
+vi.mock("@/components/home/AnimatedHeadline", () => ({
+  AnimatedHeadline: ({ children, className }: { children: string; className?: string }) => (
+    <span className={className}>{children}</span>
+  ),
+}));
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import { setDesktop } from "@/lib/test-utils/matchMedia";
 

@@ -1,6 +1,5 @@
-import { redirect } from "next/navigation";
+import { HomePage } from "@/components/home/HomePage";
 
-// There is no location step: the backend serves every shop, so the home route goes straight to the dashboard.
 export default function Page() {
-  redirect("/dashboard");
+  return <HomePage />;
 }
