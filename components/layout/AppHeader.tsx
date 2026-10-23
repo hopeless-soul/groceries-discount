@@ -3,6 +3,7 @@
 import { RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { KofiButton } from "@/components/layout/KofiButton";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { useDashboardUiStore } from "@/lib/stores/dashboard-ui-store";
 import BascetLogo from "@/public/bascet_logo.svg";
@@ -24,7 +25,7 @@ export function AppHeader({ onRefresh, refreshing = false }: AppHeaderProps) {
   });
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-[#e4e4e7] bg-white px-6">
+    <header className="relative flex h-16 items-center justify-between border-b border-[#e4e4e7] bg-white px-6">
       <button
         type="button"
         onClick={toggleSidebarOpen}
@@ -37,9 +38,11 @@ export function AppHeader({ onRefresh, refreshing = false }: AppHeaderProps) {
         <span className="text-base font-semibold">Basket</span>
       </button>
 
-      <span className="hidden text-sm text-[#71717a] lg:inline">{today}</span>
+      {/* absolute so unequal side widths don't pull it off-center */}
+      <span className="absolute left-1/2 hidden -translate-x-1/2 text-sm text-[#71717a] lg:inline">{today}</span>
 
       <div className="flex items-center gap-2">
+        <KofiButton />
         <Button variant="outline" onClick={onRefresh} disabled={refreshing} aria-label="Refresh">
           <RefreshCw aria-hidden="true" className={refreshing ? "h-4 w-4 animate-spin" : "h-4 w-4"} />
         </Button>
